@@ -5,6 +5,7 @@ import com.negocionaarea.mobile_api.model.ProdutoModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProdutoService {
@@ -22,17 +23,17 @@ public class ProdutoService {
         return produtoRepository.findAll();
     }
 
-    public void delete(Long id){
+    public void delete(UUID id){
         ProdutoModel produto = produtoRepository.findById(id)
                 .orElseThrow(()->new RuntimeException("Empresa não encontrada"));
         produtoRepository.delete(produto);
     }
-    public ProdutoModel getbyId(Long id){
+    public ProdutoModel getbyId( UUID id){
         return produtoRepository.findById(id)
                 .orElseThrow(()->new RuntimeException("Produto não encontrado com ID" + id));
     }
 
-    public ProdutoModel updateAll(Long id, ProdutoModel novosDados){
+    public ProdutoModel updateAll(UUID id, ProdutoModel novosDados){
         ProdutoModel produto= produtoRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Produto não encontrado"));
         produto.setNome(novosDados.getNome());
@@ -42,7 +43,7 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
-    public ProdutoModel update(Long id, ProdutoModel novosDados){
+    public ProdutoModel update(UUID id, ProdutoModel novosDados){
         ProdutoModel produto = produtoRepository.findById(id)
                 .orElseThrow(()->new RuntimeException("Produto não encontrado"));
         if(novosDados.getNome()!=null){

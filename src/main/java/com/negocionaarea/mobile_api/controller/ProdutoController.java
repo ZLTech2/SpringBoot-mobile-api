@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/produtos")
@@ -28,25 +29,25 @@ public class ProdutoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProdutoModel> getById(@PathVariable Long id) {
+    public ResponseEntity<ProdutoModel> getById(@PathVariable UUID id) {
         ProdutoModel produto = produtoService.getbyId(id);
         return ResponseEntity.ok(produto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable UUID id){
         produtoService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProdutoModel> updateAll(@PathVariable Long id, @RequestBody ProdutoModel novosDados){
+    public ResponseEntity<ProdutoModel> updateAll(@PathVariable UUID id, @RequestBody ProdutoModel novosDados){
         ProdutoModel atualizado = produtoService.updateAll(id, novosDados);
         return ResponseEntity.ok(atualizado);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProdutoModel> update(@PathVariable Long id, @RequestBody ProdutoModel novosDados){
+    public ResponseEntity<ProdutoModel> update(@PathVariable UUID id, @RequestBody ProdutoModel novosDados){
         ProdutoModel atualizado = produtoService.update(id, novosDados);
         return ResponseEntity.ok(atualizado);
     }
