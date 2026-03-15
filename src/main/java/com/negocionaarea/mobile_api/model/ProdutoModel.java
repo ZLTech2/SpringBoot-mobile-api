@@ -19,12 +19,16 @@ public class ProdutoModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID idProduto;
+    @Column(nullable = false, length = 255)
+    private String nome;
     @Column(nullable = false, length = 100)
     private String descricaoProduto;
     @Column(nullable = false )
     private double precoProduto;
     @Column(nullable = false)
-    private LocalDateTime dataCriacaoProduto;
+    private LocalDateTime dataPostagem = LocalDateTime.now();
+    @Column(nullable = false)
+    private String imagem;
     @ManyToOne
     @JoinColumn(name = "id_empresa")
     private EmpresaModel empresa;
