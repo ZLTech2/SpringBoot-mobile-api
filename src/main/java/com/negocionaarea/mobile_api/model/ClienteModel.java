@@ -22,7 +22,7 @@ public class ClienteModel {
     @Column(nullable = false, length = 100)
     private String nomeCliente;
     @Column(nullable = false, length = 50)
-    private String emailCliente;
+    private String email;
     @Column(nullable = false, length = 100)
     private String senhaCliente;
     @Column(nullable = false, length = 500)

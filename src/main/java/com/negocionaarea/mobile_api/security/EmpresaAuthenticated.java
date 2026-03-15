@@ -33,6 +33,6 @@ public class EmpresaAuthenticated implements UserDetails {
 
     @Override
     public String getUsername() {
-        return empresaModel.getEmailEmpresa();
+        return empresaModel.getEmail();
     }
 }

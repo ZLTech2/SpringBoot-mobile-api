@@ -31,7 +31,7 @@ public class EmpresaModel {
     @Column(nullable = false, length = 50)
     private String contato;
     @Column(nullable = false, length = 50)
-    private String emailEmpresa;
+    private String email;
     @Column(nullable = false, length = 100)
     private String senhaEmpesa;
     @Column(nullable = false, length = 500)
