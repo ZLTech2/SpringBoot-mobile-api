@@ -24,7 +24,7 @@ public class ProdutoModel {
     @Column(nullable = false, length = 100)
     private String descricaoProduto;
     @Column(nullable = false )
-    private double precoProduto;
+    private Double precoProduto;
     @Column(nullable = false)
     private LocalDateTime dataPostagem = LocalDateTime.now();
     @Column(nullable = false)
