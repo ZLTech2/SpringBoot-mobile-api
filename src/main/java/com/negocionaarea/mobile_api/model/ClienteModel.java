@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -28,4 +29,8 @@ public class ClienteModel {
     @Column(nullable = false, length = 500)
     private String urlPerfilCliente;
     private Role roleCliente;
+
+    //Relação do cliente com a entidade curtida
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL) //cascade reflete o que acontecer com o pai acontece com o filho
+    private List<CurtidaModel>curtidas;
 }

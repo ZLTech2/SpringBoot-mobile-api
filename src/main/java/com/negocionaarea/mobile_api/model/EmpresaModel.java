@@ -41,6 +41,6 @@ public class EmpresaModel {
     private Role roleEmpresa;
 
     // Relação da empresa com a entidade produto
-    @OneToMany(mappedBy = "empresa")
+    @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL)
     private List<ProdutoModel> posts;
 }

@@ -28,4 +28,9 @@ public class CurtidaModel {
     @ManyToOne
     @JoinColumn(name = "id_produto")
     private ProdutoModel post;
+
+    // Relação da curtida com a entidade cliente
+    @ManyToOne
+    @JoinColumn(name = "id_cliente")
+    private ClienteModel cliente;
 }

@@ -35,6 +35,6 @@ public class ProdutoModel {
     private EmpresaModel empresa;
 
     // Relação do produto com a entidade curtida
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<CurtidaModel>curtidas;
 }
