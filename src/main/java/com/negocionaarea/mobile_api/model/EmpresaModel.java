@@ -39,6 +39,8 @@ public class EmpresaModel {
     @Column(nullable = false, length = 500)
     private String urlCapaEmpresa;
     private Role roleEmpresa;
+
+    // Relação da empresa com a entidade produto
     @OneToMany(mappedBy = "empresa")
     private List<ProdutoModel> posts;
 }

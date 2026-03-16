@@ -23,4 +23,9 @@ public class CurtidaModel {
     @CreationTimestamp
     @Column(nullable = false, updatable = false) //updatetable deixa fazer o insert mas depois o valor nunca mais se altera
     private LocalDateTime dataCurtida;
+
+    // Relação da curtida com a entidade produto
+    @ManyToOne
+    @JoinColumn(name = "id_produto")
+    private ProdutoModel post;
 }

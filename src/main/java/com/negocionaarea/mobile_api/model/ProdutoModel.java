@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -27,7 +28,13 @@ public class ProdutoModel {
     @Column(nullable = false, updatable = false) //updatetable deixa fazer o insert mas depois o valor nunca mais se altera
     @CreationTimestamp
     private LocalDateTime dataCriacaoProduto;
-    @ManyToOne //relação do produto para a empresa
+
+    // Relação do produto com a entidade empresa
+    @ManyToOne
     @JoinColumn(name = "id_empresa")
     private EmpresaModel empresa;
+
+    // Relação do produto com a entidade curtida
+    @OneToMany(mappedBy = "post")
+    private List<CurtidaModel>curtidas;
 }
