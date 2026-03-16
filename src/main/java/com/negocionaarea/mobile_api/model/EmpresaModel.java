@@ -18,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class EmpresaModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     @Column(nullable = false, length = 100)
     private String nomeEmpresa;
@@ -39,6 +39,6 @@ public class EmpresaModel {
     @Column(nullable = false, length = 500)
     private String urlCapaEmpresa;
     private Role roleEmpresa;
-    @OneToMany
+    @OneToMany(mappedBy = "empresa")
     private List<ProdutoModel> posts;
 }

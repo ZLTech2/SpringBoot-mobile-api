@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ClienteModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     @Column(nullable = false, length = 100)
     private String nomeCliente;

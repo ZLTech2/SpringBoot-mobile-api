@@ -7,5 +7,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ClienteRepository extends JpaRepository<ClienteModel, UUID> {
-    Optional<ClienteModel> findByEmail(String email);
+    Optional<ClienteModel> findByEmailCliente(String email);
 }
