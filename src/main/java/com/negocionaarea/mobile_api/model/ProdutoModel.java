@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -23,9 +24,10 @@ public class ProdutoModel {
     private String descricaoProduto;
     @Column(nullable = false )
     private double precoProduto;
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false) //updatetable deixa fazer o insert mas depois o valor nunca mais se altera
+    @CreationTimestamp
     private LocalDateTime dataCriacaoProduto;
-    @ManyToOne
+    @ManyToOne //relação do produto para a empresa
     @JoinColumn(name = "id_empresa")
     private EmpresaModel empresa;
 }
