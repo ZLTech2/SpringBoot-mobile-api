@@ -27,4 +27,9 @@ public class PreferenciaNotificacao {
     private Double raioMaximoKm;
     @Column(nullable = false)
     private List<String>categoriasInteresse;
+
+    // mapeamento da entidade cliente e PreferenciaNotificacao
+    @OneToOne
+    @JoinColumn(name = "cliente_id")
+    private ClienteModel cliente;
 }

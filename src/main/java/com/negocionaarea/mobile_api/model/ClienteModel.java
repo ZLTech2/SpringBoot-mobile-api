@@ -33,4 +33,8 @@ public class ClienteModel {
     //Relação do cliente com a entidade curtida
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL) //cascade reflete o que acontecer com o pai acontece com o filho
     private List<CurtidaModel>curtidas;
+
+    // Relação da classe cliente com PreferenciaNotificacao
+    @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private PreferenciaNotificacao preferenciaNotificacao;
 }
