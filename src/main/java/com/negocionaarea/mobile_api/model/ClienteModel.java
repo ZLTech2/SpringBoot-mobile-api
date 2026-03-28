@@ -36,5 +36,5 @@ public class ClienteModel {
 
     // Relação da classe cliente com PreferenciaNotificacao
     @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
-    private PreferenciaNotificacao preferenciaNotificacao;
+    private PreferenciaNotificacaoModel preferenciaNotificacao;
 }

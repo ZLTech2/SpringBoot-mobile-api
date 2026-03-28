@@ -15,7 +15,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PreferenciaNotificacao {
+public class PreferenciaNotificacaoModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
