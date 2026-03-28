@@ -26,8 +26,10 @@ public class EmpresaModel {
     private String cnpjEmpresa;
     @Column(nullable = false, length = 50)
     private String categoriaEmpresa;
-    @Column(nullable = false, length = 100)
-    private String bairroEmpresa;
+    @Column(nullable = false)
+    private Double LatitudeEmpresa;
+    @Column(nullable = false)
+    private Double LongitudeEmpresa;
     @Column(nullable = false, length = 50)
     private String contato;
     @Column(nullable = false, length = 50)
