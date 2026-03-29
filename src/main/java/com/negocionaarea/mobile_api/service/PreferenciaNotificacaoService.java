@@ -34,7 +34,7 @@ public class PreferenciaNotificacaoService {
 
         // "filtro" para saber se a categoria esta no interesse do cliente e o produto esta em promocao
         for (PreferenciaNotificacaoModel pref : listaPreferenciasSalvas){
-            boolean interesseCategoria = pref.getCategoriasInteresse().equals(empresa.getCategoriaEmpresa());
+            boolean interesseCategoria = pref.getCategoriasInteresse().contains(empresa.getCategoriaEmpresa());
             boolean receberPromocao = pref.isReceberQualquerPromo() && novoProduto.isPromocao();
 
             if (interesseCategoria || receberPromocao){
@@ -42,6 +42,8 @@ public class PreferenciaNotificacaoService {
 
                 if (distanciaClienteEmpresa <= pref.getRaioMaximoKm()){
                     enviarEmail(pref.getCliente(), novoProduto);
+
+                    break;
                 }
             }
 
@@ -68,7 +70,7 @@ public class PreferenciaNotificacaoService {
 
     private void enviarEmail(ClienteModel cliente, ProdutoModel produto){
         var message = new SimpleMailMessage();
-        message.setFrom("zltech64@gmail.com");
+        message.setFrom("dtayna3@gmail.com");
         message.setTo(cliente.getEmailCliente());
         message.setSubject("Nova oferta: " + produto.getNomeProduto());
 
@@ -84,6 +86,8 @@ public class PreferenciaNotificacaoService {
 
         // enviando o email
         javaMailSender.send(message);
+
+        System.out.println("✅ Email enviado para: " + cliente.getEmailCliente());
 
 
     }
