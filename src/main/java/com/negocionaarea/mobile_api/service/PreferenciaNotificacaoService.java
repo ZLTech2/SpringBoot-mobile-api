@@ -5,6 +5,7 @@ import com.negocionaarea.mobile_api.model.EmpresaModel;
 import com.negocionaarea.mobile_api.model.PreferenciaNotificacaoModel;
 import com.negocionaarea.mobile_api.model.ProdutoModel;
 import com.negocionaarea.mobile_api.repository.PreferenciaNotificacaoRepository;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class PreferenciaNotificacaoService {
     }
 
     @Async
-    private void dispararNotificacoes(ProdutoModel novoProduto){
+    public void dispararNotificacoes(ProdutoModel novoProduto){
         // acessa a empresa pelo produto para saber de onde esta vindo
         EmpresaModel empresa = novoProduto.getEmpresa();
 
@@ -36,7 +37,7 @@ public class PreferenciaNotificacaoService {
             boolean interesseCategoria = pref.getCategoriasInteresse().equals(empresa.getCategoriaEmpresa());
             boolean receberPromocao = pref.isReceberQualquerPromo() && novoProduto.isPromocao();
 
-            if (interesseCategoria && receberPromocao){
+            if (interesseCategoria || receberPromocao){
                 double distanciaClienteEmpresa = calcularDistancia(pref.getLatitudeCliente(), pref.getLongitudeCliente(), empresa.getLatitudeEmpresa(), empresa.getLongitudeEmpresa());
 
                 if (distanciaClienteEmpresa <= pref.getRaioMaximoKm()){
@@ -66,6 +67,24 @@ public class PreferenciaNotificacaoService {
     }
 
     private void enviarEmail(ClienteModel cliente, ProdutoModel produto){
+        var message = new SimpleMailMessage();
+        message.setFrom("zltech64@gmail.com");
+        message.setTo(cliente.getEmailCliente());
+        message.setSubject("Nova oferta: " + produto.getNomeProduto());
+
+        // construção do corpo do email com StringBuilder
+        String corpoEmail = new StringBuilder()
+                .append("Olá").append(cliente.getNomeCliente()).append("!\n\n")
+                .append("Encontramoms um produto do seu interesse bem perto de você:\n")
+                .append("Produto: ").append(produto.getNomeProduto()).append("\n")
+                .append("Preço: R$ ").append(produto.getPrecoProduto()).append("\n")
+                .append("Acesse o app para ver os detalhes do produto e da empresa").toString();
+
+        message.setText(corpoEmail);
+
+        // enviando o email
+        javaMailSender.send(message);
+
 
     }
 }
