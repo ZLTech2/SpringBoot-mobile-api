@@ -30,6 +30,6 @@ public class ProdutoModel {
     @Column(nullable = false)
     private String imagem;
     @ManyToOne
-    @JoinColumn(name = "id_empresa")
+    @JoinColumn(name = "id_empresa", nullable = true)
     private EmpresaModel empresa;
 }

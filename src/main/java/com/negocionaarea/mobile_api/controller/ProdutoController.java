@@ -4,6 +4,7 @@ import com.negocionaarea.mobile_api.dto.ProdutoCreateRequest;
 import com.negocionaarea.mobile_api.dto.ProdutoResponse;
 import com.negocionaarea.mobile_api.dto.ProdutoUpdateRequest;
 import com.negocionaarea.mobile_api.service.ProdutoService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +21,13 @@ public class ProdutoController {
         this.produtoService = produtoService;
     }
 
-    @PostMapping("/create")
+    @PostMapping
     @PreAuthorize("hasRole('ENTERPRISE')")
-    public ResponseEntity<ProdutoResponse> create(@RequestBody ProdutoCreateRequest request) {
+    public ResponseEntity<ProdutoResponse> create(@RequestBody @Valid ProdutoCreateRequest request) {
         return ResponseEntity.ok(produtoService.create(request));
     }
 
-    @GetMapping("/findall")
+    @GetMapping
     public ResponseEntity<List<ProdutoResponse>> getAll() {
         return ResponseEntity.ok(produtoService.getAll());
     }
