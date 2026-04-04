@@ -18,26 +18,25 @@ import java.util.UUID;
 @AllArgsConstructor
 public class EmpresaModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(nullable = false, length = 100)
-    private String nomeEmpresa;
+    private String nome;
     @Column(nullable = false, length = 14)
-    private String cnpjEmpresa;
+    private String cnpj;
     @Column(nullable = false, length = 50)
-    private String categoriaEmpresa;
-    @Column(nullable = false, length = 100)
-    private String bairroEmpresa;
+    private String categoria;
+
     @Column(nullable = false, length = 50)
-    private String contato;
+    private String telefone;
     @Column(nullable = false, length = 50)
     private String email;
+    @Column(length = 100)
+    private String descricao;
     @Column(nullable = false, length = 100)
-    private String senhaEmpesa;
-    @Column(nullable = false, length = 500)
-    private String urlPerfilEmpresa;
-    @Column(nullable = false, length = 500)
-    private String urlCapaEmpresa;
+    private String senha;
+
+
     private Role roleEmpresa;
     @OneToMany
     private List<ProdutoModel> posts;

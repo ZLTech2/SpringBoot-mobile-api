@@ -28,7 +28,7 @@ public class EmpresaAuthenticated implements UserDetails {
 
     @Override
     public @Nullable String getPassword() {
-        return empresaModel.getSenhaEmpesa();
+        return empresaModel.getSenha();
     }
 
     @Override
