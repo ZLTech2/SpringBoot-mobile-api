@@ -23,8 +23,9 @@ public class ProdutoController {
 
     @PostMapping
     @PreAuthorize("hasRole('ENTERPRISE')")
-    public ResponseEntity<ProdutoResponse> create(@RequestBody @Valid ProdutoCreateRequest request) {
-        return ResponseEntity.ok(produtoService.create(request));
+    public ResponseEntity <ApiResponse<ProdutoResponse>> create(@RequestBody @Valid ProdutoCreateRequest request) {
+        ProdutoResponse response = produtoService.create(request);
+        return ResponseEntity.ok(new ApiResponse<>(200, response));
     }
 
     @GetMapping
