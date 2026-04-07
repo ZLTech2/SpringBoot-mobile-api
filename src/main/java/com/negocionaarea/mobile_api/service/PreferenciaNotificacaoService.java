@@ -5,10 +5,15 @@ import com.negocionaarea.mobile_api.model.EmpresaModel;
 import com.negocionaarea.mobile_api.model.PreferenciaNotificacaoModel;
 import com.negocionaarea.mobile_api.model.ProdutoModel;
 import com.negocionaarea.mobile_api.repository.PreferenciaNotificacaoRepository;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
 
 import javax.swing.*;
 import java.util.List;
@@ -17,11 +22,13 @@ import java.util.List;
 public class PreferenciaNotificacaoService {
     private final PreferenciaNotificacaoRepository preferenciaNotificacaoRepository;
     private final JavaMailSender javaMailSender;
+    private final TemplateEngine templateEngine;
 
 
-    public PreferenciaNotificacaoService(PreferenciaNotificacaoRepository preferenciaNotificacaoRepository, JavaMailSender javaMailSender) {
+    public PreferenciaNotificacaoService(PreferenciaNotificacaoRepository preferenciaNotificacaoRepository, JavaMailSender javaMailSender, TemplateEngine templateEngine) {
         this.preferenciaNotificacaoRepository = preferenciaNotificacaoRepository;
         this.javaMailSender = javaMailSender;
+        this.templateEngine = templateEngine;
     }
 
     @Async
@@ -69,25 +76,35 @@ public class PreferenciaNotificacaoService {
     }
 
     private void enviarEmail(ClienteModel cliente, ProdutoModel produto){
-        var message = new SimpleMailMessage();
-        message.setFrom("dtayna3@gmail.com");
-        message.setTo(cliente.getEmailCliente());
-        message.setSubject("Nova oferta: " + produto.getNomeProduto());
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        // construção do corpo do email com StringBuilder
-        String corpoEmail = new StringBuilder()
-                .append("Olá").append(cliente.getNomeCliente()).append("!\n\n")
-                .append("Encontramoms um produto do seu interesse bem perto de você:\n")
-                .append("Produto: ").append(produto.getNomeProduto()).append("\n")
-                .append("Preço: R$ ").append(produto.getPrecoProduto()).append("\n")
-                .append("Acesse o app para ver os detalhes do produto e da empresa").toString();
+            helper.setFrom("dtayna3@gmail.com");
+            helper.setTo(cliente.getEmailCliente());
+            helper.setSubject("Nova oferta " + produto.getNomeProduto());
 
-        message.setText(corpoEmail);
+            //contexto
+            Context context = new Context();
+            context.setVariable("nomeCliente", cliente.getNomeCliente());
+            context.setVariable("nomeProduto", produto.getNomeProduto());
+            context.setVariable("preco", produto.getPrecoProduto());
 
-        // enviando o email
-        javaMailSender.send(message);
+            String linkProduto = "http://localhost:3000/produto/" + produto.getIdProduto();
+            context.setVariable("linknProduto", linkProduto);
 
-        System.out.println("✅ Email enviado para: " + cliente.getEmailCliente());
+            //processa o template
+            String html = templateEngine.process("email-template", context);
+
+            //envia como html
+            helper.setText(html, true);
+            javaMailSender.send(message);
+
+            System.out.println("Email enviado para: " + cliente.getEmailCliente());
+
+        }catch (Exception e){
+            System.out.println("Erro ao enviar email: " + e.getMessage());
+        }
 
 
     }
