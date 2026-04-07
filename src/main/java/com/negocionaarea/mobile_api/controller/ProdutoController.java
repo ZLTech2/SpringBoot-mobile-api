@@ -1,5 +1,6 @@
 package com.negocionaarea.mobile_api.controller;
 
+import com.negocionaarea.mobile_api.dto.ApiResponse;
 import com.negocionaarea.mobile_api.dto.ProdutoCreateRequest;
 import com.negocionaarea.mobile_api.dto.ProdutoResponse;
 import com.negocionaarea.mobile_api.dto.ProdutoUpdateRequest;
