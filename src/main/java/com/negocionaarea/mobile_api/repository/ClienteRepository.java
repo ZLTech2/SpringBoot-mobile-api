@@ -8,4 +8,8 @@ import java.util.UUID;
 
 public interface ClienteRepository extends JpaRepository<ClienteModel, UUID> {
     Optional<ClienteModel> findByEmail(String email);
+<<<<<<< HEAD
+=======
+    
+>>>>>>> master
 }

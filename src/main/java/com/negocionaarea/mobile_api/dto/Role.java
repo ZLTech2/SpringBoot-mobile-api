@@ -9,4 +9,11 @@ public enum Role {
     Role(String role) {
         this.role = role;
     }
+<<<<<<< HEAD
+=======
+
+    public String getRole() {
+        return role;
+    }
+>>>>>>> master
 }
