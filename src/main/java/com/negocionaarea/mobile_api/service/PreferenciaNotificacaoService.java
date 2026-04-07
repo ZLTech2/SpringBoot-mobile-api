@@ -91,7 +91,7 @@ public class PreferenciaNotificacaoService {
             context.setVariable("preco", produto.getPrecoProduto());
 
             String linkProduto = "http://localhost:3000/produto/" + produto.getIdProduto();
-            context.setVariable("linknProduto", linkProduto);
+            context.setVariable("linkProduto", linkProduto);
 
             //processa o template
             String html = templateEngine.process("email-template", context);
