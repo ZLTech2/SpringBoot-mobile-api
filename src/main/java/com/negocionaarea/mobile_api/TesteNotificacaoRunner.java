@@ -38,7 +38,7 @@ public class TesteNotificacaoRunner implements CommandLineRunner {
 
         // 1. CRIAR UM CLIENTE FICTÍCIO COM PREFERÊNCIAS
         ClienteModel cliente = new ClienteModel();
-        cliente.setNomeCliente("Maria");
+        cliente.setNomeCliente("Tayna");
         cliente.setEmailCliente("taynasantos20191@outlook.com");// Coloque o e-mail que quer ver no Mailtrap
         cliente.setSenhaCliente("123");
         cliente.setUrlPerfilCliente("www.iushuivhbsuij");

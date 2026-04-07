@@ -6,6 +6,7 @@ import com.negocionaarea.mobile_api.model.PreferenciaNotificacaoModel;
 import com.negocionaarea.mobile_api.model.ProdutoModel;
 import com.negocionaarea.mobile_api.repository.PreferenciaNotificacaoRepository;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -98,6 +99,11 @@ public class PreferenciaNotificacaoService {
 
             //envia como html
             helper.setText(html, true);
+            helper.addInline("logoEmpresa", new ClassPathResource("images/logoApp.png"));
+            ClassPathResource resource = new ClassPathResource("images/logoApp.png");
+            System.out.println(resource.getPath());
+            System.out.println("Imagem existe? " + resource.exists());
+
             javaMailSender.send(message);
 
             System.out.println("Email enviado para: " + cliente.getEmailCliente());
