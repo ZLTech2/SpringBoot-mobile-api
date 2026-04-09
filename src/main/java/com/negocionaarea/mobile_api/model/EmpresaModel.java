@@ -1,5 +1,6 @@
 package com.negocionaarea.mobile_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.negocionaarea.mobile_api.dto.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,36 +12,44 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "empresa")
+@Table(name = "empresas")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmpresaModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(nullable = false, length = 100)
-    private String nomeEmpresa;
-    @Column(nullable = false, length = 14)
-    private String cnpjEmpresa;
+    private String nome;
+
+    @Column(nullable = false, unique = true, length = 14)
+    private String cnpj;
+
     @Column(nullable = false, length = 50)
-    private String categoriaEmpresa;
+    private String categoria;
+
+    @Column(nullable = false, length = 50)
+    private String telefone;
+
+    @Column(nullable = false, unique = true, length = 50)
+    private String email;
+
+    @Column(length = 100)
+    private String descricao;
+
     @Column(nullable = false, length = 100)
-    private String bairroEmpresa;
-    @Column(nullable = false, length = 50)
-    private String contato;
-    @Column(nullable = false, length = 50)
-    private String emailEmpresa;
-    @Column(nullable = false, length = 100)
-    private String senhaEmpesa;
-    @Column(nullable = false, length = 500)
-    private String urlPerfilEmpresa;
-    @Column(nullable = false, length = 500)
-    private String urlCapaEmpresa;
+    private String senha; //
+
+    @Enumerated(EnumType.STRING)
     private Role roleEmpresa;
+
+    @OneToOne(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private EnderecoEmpresaModel endereco;
 
     // Relação da empresa com a entidade produto
     @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<ProdutoModel> posts;
 }
