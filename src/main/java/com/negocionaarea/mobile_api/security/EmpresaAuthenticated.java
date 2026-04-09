@@ -28,11 +28,11 @@ public class EmpresaAuthenticated implements UserDetails {
 
     @Override
     public @Nullable String getPassword() {
-        return empresaModel.getSenhaEmpesa();
+        return empresaModel.getSenha();
     }
 
     @Override
     public String getUsername() {
-        return empresaModel.getEmailEmpresa();
+        return empresaModel.getEmail();
     }
 }
