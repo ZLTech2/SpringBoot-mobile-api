@@ -33,6 +33,6 @@ public class ClienteAuthenticated implements UserDetails {
 
     @Override
     public String getUsername() {
-        return clienteModel.getEmailCliente();
+        return clienteModel.getEmail();
     }
 }
