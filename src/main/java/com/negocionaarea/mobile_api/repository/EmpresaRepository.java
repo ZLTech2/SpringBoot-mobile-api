@@ -8,5 +8,12 @@ import java.util.UUID;
 
 public interface EmpresaRepository extends JpaRepository<EmpresaModel, UUID> {
 
-    Optional <EmpresaModel> findByEmailEmpresa(String email);
+    // Faz a busca para o login -tutu
+    Optional<EmpresaModel> findByEmail(String email);
+
+    // Verifica se o CNPJ já existe - tutu
+    boolean existsByCnpj(String cnpj);
+
+    // Verifica se o Email já existe - tutu
+    boolean existsByEmail(String email);
 }

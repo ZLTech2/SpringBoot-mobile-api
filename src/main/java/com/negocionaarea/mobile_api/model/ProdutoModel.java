@@ -21,13 +21,16 @@ public class ProdutoModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idProduto;
+    @Column(nullable = false, length = 255)
+    private String nome;
     @Column(nullable = false, length = 100)
     private String descricaoProduto;
     @Column(nullable = false )
-    private double precoProduto;
-    @Column(nullable = false, updatable = false) //updatetable deixa fazer o insert mas depois o valor nunca mais se altera
-    @CreationTimestamp
-    private LocalDateTime dataCriacaoProduto;
+    private Double precoProduto;
+    @Column(nullable = false)
+    private LocalDateTime dataPostagem = LocalDateTime.now();
+    @Column(nullable = false)
+    private String imagem;
 
     // Relação do produto com a entidade empresa
     @ManyToOne
