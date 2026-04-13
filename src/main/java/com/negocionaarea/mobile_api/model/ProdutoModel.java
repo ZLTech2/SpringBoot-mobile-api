@@ -31,6 +31,7 @@ public class ProdutoModel {
     private LocalDateTime dataPostagem = LocalDateTime.now();
     @Column(nullable = false)
     private String imagem;
+    private boolean isPromocao = false;
 
     // Relação do produto com a entidade empresa
     @ManyToOne
