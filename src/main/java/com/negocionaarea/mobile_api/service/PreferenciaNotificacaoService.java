@@ -42,7 +42,7 @@ public class PreferenciaNotificacaoService {
 
         // "filtro" para saber se a categoria esta no interesse do cliente e o produto esta em promocao
         for (PreferenciaNotificacaoModel pref : listaPreferenciasSalvas){
-            boolean interesseCategoria = pref.getCategoriasInteresse().contains(empresa.getCategoriaEmpresa());
+            boolean interesseCategoria = pref.getCategoriasInteresse().contains(empresa.getCategoria());
             boolean receberPromocao = pref.isReceberQualquerPromo() && novoProduto.isPromocao();
 
             if (interesseCategoria || receberPromocao){
@@ -51,7 +51,6 @@ public class PreferenciaNotificacaoService {
                 if (distanciaClienteEmpresa <= pref.getRaioMaximoKm()){
                     enviarEmail(pref.getCliente(), novoProduto);
 
-                    break;
                 }
             }
 
@@ -82,13 +81,13 @@ public class PreferenciaNotificacaoService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setFrom("dtayna3@gmail.com");
-            helper.setTo(cliente.getEmailCliente());
-            helper.setSubject("Nova oferta " + produto.getNomeProduto());
+            helper.setTo(cliente.getEmail());
+            helper.setSubject("Nova oferta " + produto.getNome());
 
             //contexto
             Context context = new Context();
-            context.setVariable("nomeCliente", cliente.getNomeCliente());
-            context.setVariable("nomeProduto", produto.getNomeProduto());
+            context.setVariable("nomeCliente", cliente.getNome());
+            context.setVariable("nomeProduto", produto.getNome());
             context.setVariable("preco", produto.getPrecoProduto());
 
             String linkProduto = "http://localhost:3000/produto/" + produto.getIdProduto();
@@ -106,7 +105,7 @@ public class PreferenciaNotificacaoService {
 
             javaMailSender.send(message);
 
-            System.out.println("Email enviado para: " + cliente.getEmailCliente());
+            System.out.println("Email enviado para: " + cliente.getEmail());
 
         }catch (Exception e){
             System.out.println("Erro ao enviar email: " + e.getMessage());
