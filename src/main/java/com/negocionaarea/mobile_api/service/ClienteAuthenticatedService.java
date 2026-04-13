@@ -19,7 +19,7 @@ public class ClienteAuthenticatedService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         //procura o cliente pelo email
-        ClienteModel cliente = clienteRepository.findByEmailCliente(email)
+        ClienteModel cliente = clienteRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Cliente não cadastrado"));
 
         return new ClienteAuthenticated(cliente);

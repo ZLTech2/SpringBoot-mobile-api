@@ -18,7 +18,7 @@ public class EmpresaAuthenticatedService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        EmpresaModel empresa = empresaRepository.findByEmailEmpresa(email)
+        EmpresaModel empresa = empresaRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Empresa não cadastrada"));
         return new EmpresaAuthenticated(empresa);
     }

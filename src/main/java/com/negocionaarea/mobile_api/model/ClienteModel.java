@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "cliente")
+@Table(name = "clientes")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,20 +21,24 @@ public class ClienteModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     @Column(nullable = false, length = 100)
-    private String nomeCliente;
+    private String nome;
     @Column(nullable = false, length = 50)
-    private String emailCliente;
+    private String email;
     @Column(nullable = false, length = 100)
-    private String senhaCliente;
+    private String senha;
     @Column(nullable = false, length = 500)
-    private String urlPerfilCliente;
-    private Role roleCliente;
+    private String urlPerfil;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Column(nullable = false, length = 20)
+    private String telefone;
 
     //Relação do cliente com a entidade curtida
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL) //cascade reflete o que acontecer com o pai acontece com o filho
     private List<CurtidaModel>curtidas;
 
-    // Relação da classe cliente com PreferenciaNotificacao
-    @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
-    private PreferenciaNotificacaoModel preferenciaNotificacao;
+    @Embedded
+    private EnderecoModel endereco;
 }
