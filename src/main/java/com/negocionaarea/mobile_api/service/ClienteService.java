@@ -29,12 +29,12 @@ public class ClienteService {
 
         ClienteModel cliente = new ClienteModel();
 
-        cliente.setNomeCliente(dto.getNomeCliente());
+        cliente.setNome(dto.getNomeCliente());
         cliente.setEmail(dto.getEmail());
-        cliente.setSenhaCliente(passwordEncoder.encode(dto.getSenhaCliente()));
-        cliente.setUrlPerfilCliente(dto.getUrlPerfilCliente());
+        cliente.setSenha(passwordEncoder.encode(dto.getSenhaCliente()));
+        cliente.setUrlPerfil(dto.getUrlPerfilCliente());
         cliente.setTelefone(dto.getTelefone());
-        cliente.setRoleCliente(Role.CUSTOMER);
+        cliente.setRole(Role.CUSTOMER);
 
         EnderecoModel endereco = new EnderecoModel();
         endereco.setRua(dto.getEndereco().getRua());
@@ -49,9 +49,9 @@ public class ClienteService {
 
         ClienteResponse response = new ClienteResponse();
         response.setId(cliente.getId());
-        response.setNomeCliente(cliente.getNomeCliente());
+        response.setNome(cliente.getNome());
         response.setEmail(cliente.getEmail());
-        response.setUrlPerfilCliente(cliente.getUrlPerfilCliente());
+        response.setUrlPerfil(cliente.getUrlPerfil());
         response.setTelefone(cliente.getTelefone());
         response.setEndereco(dto.getEndereco());
 
@@ -64,9 +64,9 @@ public class ClienteService {
 
             ClienteResponse response = new ClienteResponse();
             response.setId(cliente.getId());
-            response.setNomeCliente(cliente.getNomeCliente());
+            response.setNome(cliente.getNome());
             response.setEmail(cliente.getEmail());
-            response.setUrlPerfilCliente(cliente.getUrlPerfilCliente());
+            response.setUrlPerfil(cliente.getUrlPerfil());
             response.setTelefone(cliente.getTelefone());
 
             return response;
