@@ -1,13 +1,17 @@
 package com.negocionaarea.mobile_api.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class EnderecoRequest {
+@AllArgsConstructor
+@NoArgsConstructor
+public class EnderecoResponse {
     private String rua;
-    private String numero;
+    private int numero;
     private String bairro;
     private String cidade;
     private String cep;
