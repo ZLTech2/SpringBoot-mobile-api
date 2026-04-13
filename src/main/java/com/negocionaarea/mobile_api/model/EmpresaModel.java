@@ -43,10 +43,10 @@ public class EmpresaModel {
     private String senha; //
 
     @Enumerated(EnumType.STRING)
-    private Role roleEmpresa;
+    private Role role;
 
-    @OneToOne(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private EnderecoEmpresaModel endereco;
+    @Embedded
+    private EnderecoModel endereco;
 
     // Relação da empresa com a entidade produto
     @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL)

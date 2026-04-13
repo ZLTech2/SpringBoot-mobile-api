@@ -1,5 +1,7 @@
 package com.negocionaarea.mobile_api.controller;
 
+import com.negocionaarea.mobile_api.dto.EmpresaRequest;
+import com.negocionaarea.mobile_api.dto.EmpresaResponse;
 import com.negocionaarea.mobile_api.model.EmpresaModel;
 import com.negocionaarea.mobile_api.service.EmpresaService;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +19,12 @@ public class EmpresaController {
     }
 
     @PostMapping
-    public ResponseEntity<EmpresaModel> create(@RequestBody EmpresaModel empresa) {
-        return ResponseEntity.ok(empresaService.create(empresa));
+    public EmpresaResponse create(@RequestBody EmpresaRequest request) {
+        return empresaService.create(request);
     }
 
     @GetMapping
-    public ResponseEntity<List<EmpresaModel>> findAll() {
-        return ResponseEntity.ok(empresaService.findAll());
+    public List<EmpresaResponse> findAll() {
+        return empresaService.findAll();
     }
 }
