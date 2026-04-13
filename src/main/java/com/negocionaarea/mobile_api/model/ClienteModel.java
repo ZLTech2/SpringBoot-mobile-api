@@ -21,16 +21,16 @@ public class ClienteModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     @Column(nullable = false, length = 100)
-    private String nomeCliente;
+    private String nome;
     @Column(nullable = false, length = 50)
     private String email;
     @Column(nullable = false, length = 100)
-    private String senhaCliente;
+    private String senha;
     @Column(nullable = false, length = 500)
-    private String urlPerfilCliente;
+    private String urlPerfil;
 
     @Enumerated(EnumType.STRING)
-    private Role roleCliente;
+    private Role role;
 
     @Column(nullable = false, length = 20)
     private String telefone;
