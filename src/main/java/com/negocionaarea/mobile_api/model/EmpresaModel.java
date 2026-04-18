@@ -48,6 +48,9 @@ public class EmpresaModel {
     @Embedded
     private EnderecoModel endereco;
 
+    @Embedded
+    private LocalizacaoModel localizacao;
+
     // Relação da empresa com a entidade produto
     @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL)
     @JsonIgnore

@@ -41,4 +41,7 @@ public class ClienteModel {
 
     @Embedded
     private EnderecoModel endereco;
+
+    @Embedded
+    private LocalizacaoModel localizacao;
 }
