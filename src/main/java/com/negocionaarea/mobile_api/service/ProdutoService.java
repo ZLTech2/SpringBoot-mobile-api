@@ -20,10 +20,12 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class ProdutoService {
     private final EmpresaRepository empresaRepository;
     private final ProdutoRepository produtoRepository;
+    private final PreferenciaNotificacaoService preferenciaNotificacao;
 
-    public ProdutoService(EmpresaRepository empresaRepository, ProdutoRepository produtoRepository) {
+    public ProdutoService(EmpresaRepository empresaRepository, ProdutoRepository produtoRepository, PreferenciaNotificacaoService preferenciaNotificacao) {
         this.empresaRepository = empresaRepository;
         this.produtoRepository = produtoRepository;
+        this.preferenciaNotificacao = preferenciaNotificacao;
     }
 
     public ProdutoResponse create(ProdutoCreateRequest request, String empresaEmail) {
@@ -37,7 +39,12 @@ public class ProdutoService {
                 .orElseThrow(() -> new ResponseStatusException(FORBIDDEN, "Empresa autenticada nao encontrada"));
         produto.setEmpresa(empresa);
 
-        return toResponse(produtoRepository.save(produto));
+        produto = produtoRepository.save(produto);
+
+        preferenciaNotificacao.dispararNotificacoes(produto);
+
+        return toResponse(produto);
+
     }
 
     public List<ProdutoResponse> getAll() {
