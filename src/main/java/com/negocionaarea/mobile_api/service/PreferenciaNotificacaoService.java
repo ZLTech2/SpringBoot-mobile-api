@@ -34,18 +34,59 @@ public class PreferenciaNotificacaoService {
 
     @Async
     public void dispararNotificacoes(ProdutoModel novoProduto){
-        // acessa a empresa pelo produto para saber de onde esta vindo
         EmpresaModel empresa = novoProduto.getEmpresa();
+        //usa a query
+        List<PreferenciaNotificacaoModel> preferencias = preferenciaNotificacaoRepository.buscarUsuariosParaNotificacao(empresa.getCategoria(), novoProduto.getEmpresa().getId());
 
-        // buscar todas as preferencias salvas
-        List<PreferenciaNotificacaoModel> listaPreferenciasSalvas = preferenciaNotificacaoRepository.findAll();
+        //percorre para enviar o email
+        for (PreferenciaNotificacaoModel pref : preferencias){
+            ClienteModel cliente = pref.getCliente();
 
-        // "filtro" para saber se a categoria esta no interesse do cliente e o produto esta em promocao
-        for (PreferenciaNotificacaoModel pref : listaPreferenciasSalvas){
-            boolean interesseCategoria = pref.getCategoriasInteresse().contains(empresa.getCategoria());
-            boolean receberPromocao = pref.isReceberQualquerPromo() && novoProduto.isPromocao();
-
+            if(!novoProduto.isPromocao() && pref.isReceberQualquerPromo()){
+                continue;
             }
+
+            enviarEmail(cliente, novoProduto);
+        }
+
+    }
+
+    private void enviarEmail(ClienteModel cliente, ProdutoModel produto){
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("dtayna3@gmail.com");
+            helper.setTo(cliente.getEmail());
+            helper.setSubject("Nova oferta " + produto.getNome());
+
+            //contexto
+            Context context = new Context();
+            context.setVariable("nomeCliente", cliente.getNome());
+            context.setVariable("nomeProduto", produto.getNome());
+            context.setVariable("preco", produto.getPrecoProduto());
+
+            String linkProduto = "http://localhost:3000/produto/" + produto.getIdProduto();
+            context.setVariable("linkProduto", linkProduto);
+
+            //processa o template
+            String html = templateEngine.process("email-template", context);
+
+            //envia como html
+            helper.setText(html, true);
+            helper.addInline("logoEmpresa", new ClassPathResource("images/logoApp.png"));
+            ClassPathResource resource = new ClassPathResource("images/logoApp.png");
+            System.out.println(resource.getPath());
+            System.out.println("Imagem existe? " + resource.exists());
+
+            javaMailSender.send(message);
+
+            System.out.println("Email enviado para: " + cliente.getEmail());
+
+        }catch (Exception e){
+            System.out.println("Erro ao enviar email: " + e.getMessage());
+        }
+
 
     }
 
