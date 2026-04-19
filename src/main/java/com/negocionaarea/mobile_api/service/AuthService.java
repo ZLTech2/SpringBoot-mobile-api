@@ -63,7 +63,7 @@ public class AuthService {
         } else if ("cliente".equals(tipo)) {
             ClienteModel cliente = clienteRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("Credenciais invalidas"));
-            if (!passwordEncoder.matches(request.getSenha(), cliente.getSenhaCliente())) {
+            if (!passwordEncoder.matches(request.getSenha(), cliente.getSenha())) {
                 throw new IllegalArgumentException("Credenciais invalidas");
             }
             roles = List.of("ROLE_" + Role.CUSTOMER.name());

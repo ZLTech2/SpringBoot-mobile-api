@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "PreferenciaNotificacao")
+@Table(name = "preferencia_notificacao")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,12 +20,10 @@ public class PreferenciaNotificacaoModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     @Column(nullable = false)
-    private  Double longitudeCliente;
-    @Column(nullable = false)
-    private Double latitudeCliente;
-    @Column(nullable = false)
     private Double raioMaximoKm;
-    @Column(nullable = false)
+    @ElementCollection
+    @CollectionTable(name = "preferencia_categorias", joinColumns = @JoinColumn(name = "preferencia_id"))
+    @Column(name = "categoria", nullable = false)
     private List<String>categoriasInteresse;
     @Column(nullable = true)
     private boolean receberQualquerPromo = false;

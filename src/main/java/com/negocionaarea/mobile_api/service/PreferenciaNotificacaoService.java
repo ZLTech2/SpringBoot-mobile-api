@@ -45,72 +45,10 @@ public class PreferenciaNotificacaoService {
             boolean interesseCategoria = pref.getCategoriasInteresse().contains(empresa.getCategoria());
             boolean receberPromocao = pref.isReceberQualquerPromo() && novoProduto.isPromocao();
 
-            if (interesseCategoria || receberPromocao){
-                double distanciaClienteEmpresa = calcularDistancia(pref.getLatitudeCliente(), pref.getLongitudeCliente(), empresa.getLatitudeEmpresa(), empresa.getLongitudeEmpresa());
-
-                if (distanciaClienteEmpresa <= pref.getRaioMaximoKm()){
-                    enviarEmail(pref.getCliente(), novoProduto);
-
-                }
             }
 
-        }
-
     }
 
-    private double calcularDistancia(double lat1, double lon1, double lat2, double lon2) {
-        // Raio da Terra em quilômetros
-        double R = 6371;
-
-        // Conversão de graus para radianos
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return R * c; // Resultado em km
-    }
-
-    private void enviarEmail(ClienteModel cliente, ProdutoModel produto){
-        try {
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom("dtayna3@gmail.com");
-            helper.setTo(cliente.getEmail());
-            helper.setSubject("Nova oferta " + produto.getNome());
-
-            //contexto
-            Context context = new Context();
-            context.setVariable("nomeCliente", cliente.getNome());
-            context.setVariable("nomeProduto", produto.getNome());
-            context.setVariable("preco", produto.getPrecoProduto());
-
-            String linkProduto = "http://localhost:3000/produto/" + produto.getIdProduto();
-            context.setVariable("linkProduto", linkProduto);
-
-            //processa o template
-            String html = templateEngine.process("email-template", context);
-
-            //envia como html
-            helper.setText(html, true);
-            helper.addInline("logoEmpresa", new ClassPathResource("images/logoApp.png"));
-            ClassPathResource resource = new ClassPathResource("images/logoApp.png");
-            System.out.println(resource.getPath());
-            System.out.println("Imagem existe? " + resource.exists());
-
-            javaMailSender.send(message);
-
-            System.out.println("Email enviado para: " + cliente.getEmail());
-
-        }catch (Exception e){
-            System.out.println("Erro ao enviar email: " + e.getMessage());
-        }
-
-
-    }
 }
+
+
