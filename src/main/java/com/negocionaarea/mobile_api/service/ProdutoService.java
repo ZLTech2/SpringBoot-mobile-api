@@ -20,10 +20,12 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class ProdutoService {
     private final EmpresaRepository empresaRepository;
     private final ProdutoRepository produtoRepository;
+    private final FileStorageService fileStorageService;
 
-    public ProdutoService(EmpresaRepository empresaRepository, ProdutoRepository produtoRepository) {
+    public ProdutoService(EmpresaRepository empresaRepository, ProdutoRepository produtoRepository, FileStorageService fileStorageService) {
         this.empresaRepository = empresaRepository;
         this.produtoRepository = produtoRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     public ProdutoResponse create(ProdutoCreateRequest request, String empresaEmail) {
@@ -31,7 +33,7 @@ public class ProdutoService {
         produto.setNome(request.nome());
         produto.setDescricaoProduto(request.descricaoProduto());
         produto.setPrecoProduto(request.precoProduto());
-        produto.setImagem(request.imagem());
+        produto.setImagem(request.imagem()); // pode ser URL/base64; ou null se voce for fazer upload depois
 
         EmpresaModel empresa = empresaRepository.findByEmail(empresaEmail)
                 .orElseThrow(() -> new ResponseStatusException(FORBIDDEN, "Empresa autenticada nao encontrada"));
@@ -108,6 +110,31 @@ public class ProdutoService {
         }
 
         return toResponse(produtoRepository.save(produto));
+    }
+
+    public ProdutoResponse uploadImagem(UUID id, org.springframework.web.multipart.MultipartFile imagem, String empresaEmail) {
+        ProdutoModel produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Produto nao encontrado com ID " + id));
+
+        EmpresaModel empresa = empresaRepository.findByEmail(empresaEmail)
+                .orElseThrow(() -> new ResponseStatusException(FORBIDDEN, "Empresa autenticada nao encontrada"));
+
+        if (produto.getEmpresa() == null || !produto.getEmpresa().getId().equals(empresa.getId())) {
+            throw new ResponseStatusException(FORBIDDEN, "Voce nao pode alterar produtos de outra empresa");
+        }
+
+        String oldPublicPath = produto.getImagem();
+        var stored = fileStorageService.storeProdutoImagem(produto.getIdProduto(), imagem);
+
+        produto.setImagem(stored.publicPath());
+        ProdutoModel saved = produtoRepository.save(produto);
+
+        // Best-effort cleanup if we're replacing a previous local upload
+        if (oldPublicPath != null && !oldPublicPath.equals(saved.getImagem())) {
+            fileStorageService.tryDeleteIfUnderUploads(oldPublicPath);
+        }
+
+        return toResponse(saved);
     }
 
     private static ProdutoResponse toResponse(ProdutoModel produto) {
