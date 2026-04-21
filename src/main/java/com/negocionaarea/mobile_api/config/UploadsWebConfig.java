@@ -18,7 +18,7 @@ public class UploadsWebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         Path root = Paths.get(uploadDir).toAbsolutePath().normalize();
 
-        // Expose files from disk under /uploads/** (e.g. /uploads/produtos/{id}/img.jpg)
+
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(root.toUri().toString());
     }
