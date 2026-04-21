@@ -19,7 +19,7 @@ public class ClienteAuthenticated implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(clienteModel.getRoleCliente() == Role.ENTERPRISE){
+        if(clienteModel.getRole() == Role.ENTERPRISE){
             return List.of(new SimpleGrantedAuthority("ROLE_ENTERPRISE"), new SimpleGrantedAuthority("ROLE_CUSTOMER"));
         }else{
             return List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
@@ -28,7 +28,7 @@ public class ClienteAuthenticated implements UserDetails {
 
     @Override
     public @Nullable String getPassword() {
-        return clienteModel.getSenhaCliente();
+        return clienteModel.getSenha();
     }
 
     @Override
