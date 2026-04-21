@@ -12,28 +12,39 @@ import com.negocionaarea.mobile_api.model.ClienteModel;
 import com.negocionaarea.mobile_api.model.EnderecoModel;
 import com.negocionaarea.mobile_api.repository.ClienteRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @Service
 public class ClienteService {
 
     private final ClienteRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final CupomService cupomService;
 
-    public ClienteService(ClienteRepository repository, PasswordEncoder passwordEncoder) {
+    public ClienteService(ClienteRepository repository, PasswordEncoder passwordEncoder, CupomService cupomService) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.cupomService = cupomService;
     }
 
 
     public ClienteResponse salvar(ClienteRequest dto) {
+        if (dto == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload invalido");
+        }
+        if (dto.getDataNascimento() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "dataNascimento e obrigatorio");
+        }
 
         ClienteModel cliente = new ClienteModel();
 
         cliente.setNome(dto.getNome());
-        cliente.setEmail(dto.getEmail());
+        cliente.setEmail(dto.getEmail() == null ? null : dto.getEmail().trim().toLowerCase());
         cliente.setSenha(passwordEncoder.encode(dto.getSenha()));
         cliente.setUrlPerfil(dto.getUrlPerfil());
         cliente.setTelefone(dto.getTelefone());
+        cliente.setDataNascimento(dto.getDataNascimento());
         cliente.setRole(Role.CUSTOMER);
 
         EnderecoModel endereco = new EnderecoModel();
@@ -47,12 +58,16 @@ public class ClienteService {
 
         cliente = repository.save(cliente);
 
+        // Se o cadastro acontecer no dia do aniversario, emite o cupom na hora (nao depende do job diario).
+        cupomService.emitirCupomAniversarioParaClienteSeElegivel(cliente, java.time.LocalDate.now());
+
         ClienteResponse response = new ClienteResponse();
         response.setId(cliente.getId());
         response.setNome(cliente.getNome());
         response.setEmail(cliente.getEmail());
         response.setUrlPerfil(cliente.getUrlPerfil());
         response.setTelefone(cliente.getTelefone());
+        response.setDataNascimento(cliente.getDataNascimento());
         response.setEndereco(dto.getEndereco());
 
         return response;
@@ -68,6 +83,7 @@ public class ClienteService {
             response.setEmail(cliente.getEmail());
             response.setUrlPerfil(cliente.getUrlPerfil());
             response.setTelefone(cliente.getTelefone());
+            response.setDataNascimento(cliente.getDataNascimento());
 
             return response;
 
