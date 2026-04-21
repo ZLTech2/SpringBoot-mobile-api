@@ -7,10 +7,10 @@ import lombok.Setter;
 @Setter
 public class ClienteRequest {
 
-    private String nomeCliente;
+    private String nome;
     private String email;
-    private String senhaCliente;
-    private String urlPerfilCliente;
+    private String senha;
+    private String urlPerfil;
     private String telefone;
 
     // endereço separado

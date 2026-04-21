@@ -32,10 +32,10 @@ public class ClienteService {
 
         ClienteModel cliente = new ClienteModel();
 
-        cliente.setNome(dto.getNomeCliente());
+        cliente.setNome(dto.getNome());
         cliente.setEmail(dto.getEmail());
-        cliente.setSenha(passwordEncoder.encode(dto.getSenhaCliente()));
-        cliente.setUrlPerfil(dto.getUrlPerfilCliente());
+        cliente.setSenha(passwordEncoder.encode(dto.getSenha()));
+        cliente.setUrlPerfil(dto.getUrlPerfil());
         cliente.setTelefone(dto.getTelefone());
         cliente.setRole(Role.CUSTOMER);
 
@@ -45,7 +45,7 @@ public class ClienteService {
         endereco.setBairro(dto.getEndereco().getBairro());
         endereco.setCidade(dto.getEndereco().getCidade());
         endereco.setCep(dto.getEndereco().getCep());
-       endereco.setEstado(dto.getEndereco().getEstado());
+        endereco.setEstado(dto.getEndereco().getEstado());
 
 
         cliente.setEndereco(endereco);
@@ -56,6 +56,7 @@ public class ClienteService {
 
         cliente.setLocalizacao(localizacao);
 
+        System.out.println(cliente);
         cliente = repository.save(cliente);
 
         ClienteResponse response = new ClienteResponse();
