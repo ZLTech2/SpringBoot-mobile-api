@@ -29,7 +29,9 @@ public class ProdutoModel {
     private Double precoProduto;
     @Column(nullable = false)
     private LocalDateTime dataPostagem = LocalDateTime.now();
-    @Column(nullable = false)
+    // Armazena uma URL/caminho publico para a imagem (ex: "/uploads/produtos/{id}/arquivo.jpg").
+    // O upload em si pode ser feito via endpoint multipart e depois setado aqui.
+    @Column(nullable = true, length = 1024)
     private String imagem;
 
     // Relação do produto com a entidade empresa
