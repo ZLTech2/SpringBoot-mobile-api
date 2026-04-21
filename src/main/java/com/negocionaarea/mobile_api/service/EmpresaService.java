@@ -42,11 +42,11 @@ public class EmpresaService {
         empresa.setDescricao(dto.getDescricao());
         empresa.setEmail(dto.getEmail());
         empresa.setSenha(passwordEncoder.encode(dto.getSenha()));
-        empresa.setRole(Role.ENTERPRISE);
+        empresa.setRoleEmpresa(Role.ENTERPRISE);
 
         EnderecoModel endereco = new EnderecoModel();
         endereco.setRua(dto.getEndereco().getRua());
-        endereco.setNumero(Integer.parseInt(dto.getEndereco().getNumero()));
+        endereco.setNumero(dto.getEndereco().getNumero());
         endereco.setBairro(dto.getEndereco().getBairro());
         endereco.setCidade(dto.getEndereco().getCidade());
         endereco.setCep(dto.getEndereco().getCep());

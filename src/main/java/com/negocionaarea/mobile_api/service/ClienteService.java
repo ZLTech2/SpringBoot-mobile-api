@@ -29,16 +29,16 @@ public class ClienteService {
 
         ClienteModel cliente = new ClienteModel();
 
-        cliente.setNome(dto.getNomeCliente());
+        cliente.setNome(dto.getNome());
         cliente.setEmail(dto.getEmail());
-        cliente.setSenha(passwordEncoder.encode(dto.getSenhaCliente()));
-        cliente.setUrlPerfil(dto.getUrlPerfilCliente());
+        cliente.setSenha(passwordEncoder.encode(dto.getSenha()));
+        cliente.setUrlPerfil(dto.getUrlPerfil());
         cliente.setTelefone(dto.getTelefone());
         cliente.setRole(Role.CUSTOMER);
 
         EnderecoModel endereco = new EnderecoModel();
         endereco.setRua(dto.getEndereco().getRua());
-        endereco.setNumero(Integer.parseInt(dto.getEndereco().getNumero()));
+        endereco.setNumero(dto.getEndereco().getNumero());
         endereco.setBairro(dto.getEndereco().getBairro());
         endereco.setCidade(dto.getEndereco().getCidade());
         endereco.setCep(dto.getEndereco().getCep());
