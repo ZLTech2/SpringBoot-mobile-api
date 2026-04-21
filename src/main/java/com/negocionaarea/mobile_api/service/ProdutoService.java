@@ -42,6 +42,7 @@ public class ProdutoService {
         produto = produtoRepository.save(produto);
 
         preferenciaNotificacao.dispararNotificacoes(produto);
+        System.out.println();
 
         return toResponse(produto);
 
