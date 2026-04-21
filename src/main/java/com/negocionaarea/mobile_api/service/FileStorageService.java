@@ -38,7 +38,7 @@ public class FileStorageService {
 
         String contentType = imagem.getContentType();
         if (contentType == null || !contentType.toLowerCase(Locale.ROOT).startsWith("image/")) {
-            throw new ResponseStatusException(BAD_REQUEST, "Arquivo enviado nao e uma imagem (content-type invalido)");
+            throw new ResponseStatusException(BAD_REQUEST, "Arquivo enviado não é uma imagem (content-type invalido)");
         }
 
         String originalName = StringUtils.cleanPath(imagem.getOriginalFilename() == null ? "" : imagem.getOriginalFilename());
@@ -48,9 +48,9 @@ public class FileStorageService {
         Path produtoDir = rootDir.resolve("produtos").resolve(produtoId.toString()).normalize();
         Path target = produtoDir.resolve(fileName).normalize();
 
-        // Prevent path traversal
+
         if (!target.startsWith(produtoDir)) {
-            throw new ResponseStatusException(BAD_REQUEST, "Nome de arquivo invalido");
+            throw new ResponseStatusException(BAD_REQUEST, "Nome de arquivo inválido");
         }
 
         try {
@@ -68,7 +68,7 @@ public class FileStorageService {
         if (publicPath == null || publicPath.isBlank()) return;
         if (!publicPath.startsWith("/uploads/")) return;
 
-        // Map /uploads/... to <rootDir>/...
+
         String relative = publicPath.substring("/uploads/".length());
         Path target = rootDir.resolve(relative).normalize();
         if (!target.startsWith(rootDir)) return;
@@ -81,7 +81,7 @@ public class FileStorageService {
     }
 
     private static String extensionFrom(String contentType, String originalName) {
-        // Prefer a safe extension from content type; fall back to original filename.
+
         String ext = switch (contentType.toLowerCase(Locale.ROOT)) {
             case "image/jpeg" -> ".jpg";
             case "image/png" -> ".png";
@@ -94,7 +94,7 @@ public class FileStorageService {
         int idx = originalName.lastIndexOf('.');
         if (idx > -1 && idx < originalName.length() - 1) {
             String candidate = originalName.substring(idx).toLowerCase(Locale.ROOT);
-            // Minimal allowlist
+
             if (candidate.equals(".jpg") || candidate.equals(".jpeg")) return ".jpg";
             if (candidate.equals(".png")) return ".png";
             if (candidate.equals(".webp")) return ".webp";
