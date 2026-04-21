@@ -20,12 +20,12 @@ public class ClienteController {
     @Autowired
     private ClienteService service;
 
-    @PostMapping
+    @PostMapping("/cadastrar")
     public ClienteResponse salvar(@RequestBody ClienteRequest dto) {
         return service.salvar(dto);
     }
 
-    @GetMapping
+    @GetMapping("/listar")
     public List<ClienteResponse> listar() {
         return service.listar();
     }

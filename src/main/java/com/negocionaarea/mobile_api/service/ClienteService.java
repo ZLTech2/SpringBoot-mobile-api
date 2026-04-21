@@ -45,6 +45,7 @@ public class ClienteService {
         endereco.setBairro(dto.getEndereco().getBairro());
         endereco.setCidade(dto.getEndereco().getCidade());
         endereco.setCep(dto.getEndereco().getCep());
+       endereco.setEstado(dto.getEndereco().getEstado());
 
 
         cliente.setEndereco(endereco);
