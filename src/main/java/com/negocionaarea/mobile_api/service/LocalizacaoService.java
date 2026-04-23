@@ -37,7 +37,7 @@ public class LocalizacaoService {
             String url = UriComponentsBuilder
                     .fromUriString("https://photon.komoot.io/api/")
                     .queryParam("q", endereco)
-                    .queryParam("limit", 5) // 👈 importante pegar mais de 1
+                    .queryParam("limit", 5)
                     .build()
                     .toUriString();
 
