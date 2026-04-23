@@ -39,19 +39,33 @@ public class PreferenciaNotificacaoService {
 
     @Async
     public void dispararNotificacoes(ProdutoModel novoProduto){
+        System.out.println("🔥 ENTROU NO dispararNotificacoes");
+        System.out.println("📦 Produto: " + novoProduto.getNome());
+        System.out.println("🏢 Empresa ID: " + novoProduto.getEmpresa().getId());
+        System.out.println("🏷️ Categoria: " + novoProduto.getEmpresa().getCategoria());
         EmpresaModel empresa = novoProduto.getEmpresa();
         //usa a query
         List<PreferenciaNotificacaoModel> preferencias = preferenciaNotificacaoRepository.buscarUsuariosParaNotificacao(empresa.getCategoria(), novoProduto.getEmpresa().getId());
 
         //percorre para enviar o email
         for (PreferenciaNotificacaoModel pref : preferencias){
+            System.out.println("➡️ Entrou no FOR");
+
             ClienteModel cliente = pref.getCliente();
 
-            if(!novoProduto.isPromocao() && pref.isReceberQualquerPromo()){
+            System.out.println("👤 Cliente: " + cliente.getEmail());
+            System.out.println("🎯 Aceita promo: " + pref.isReceberQualquerPromo());
+            System.out.println("💰 Produto é promo: " + novoProduto.isPromocao());
+
+            if(novoProduto.isPromocao() && !pref.isReceberQualquerPromo()){
+                System.out.println("⛔ BLOQUEADO POR REGRA DE PROMO");
                 continue;
             }
 
+            System.out.println("📧 ENVIANDO EMAIL...");
+
             enviarEmail(cliente, novoProduto);
+            System.out.println("✅ Email enviado para: " + cliente.getEmail());
         }
 
     }

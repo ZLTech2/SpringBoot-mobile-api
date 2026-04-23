@@ -1,6 +1,6 @@
 package com.negocionaarea.mobile_api.service;
 
-import com.negocionaarea.mobile_api.dto.OpenCageResponse;
+import com.negocionaarea.mobile_api.dto.PhotonResponse;
 import com.negocionaarea.mobile_api.model.EnderecoModel;
 import com.negocionaarea.mobile_api.model.LocalizacaoModel;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class LocalizacaoService {
@@ -26,17 +31,14 @@ public class LocalizacaoService {
     public LocalizacaoModel buscarCoordenadas(String endereco){
         try {
             System.out.println("======================================");
-            System.out.println("📍 BUSCA COM OPENCAGE");
-            System.out.println("📦 Endereço: " + endereco);
+            System.out.println("📍 BUSCA COM PHOTON");
+            System.out.println("📦 Endereço recebido: " + endereco);
 
-            String baseUrl = "https://api.opencagedata.com/geocode/v1/json";
-
-            String url = UriComponentsBuilder.fromUriString(baseUrl)
+            String url = UriComponentsBuilder
+                    .fromUriString("https://photon.komoot.io/api/")
                     .queryParam("q", endereco)
-                    .queryParam("key", apikey)
-                    .queryParam("limit", 1)
+                    .queryParam("limit", 5) // 👈 importante pegar mais de 1
                     .build()
-                    .encode()
                     .toUriString();
 
             System.out.println("🌐 URL: " + url);
@@ -46,54 +48,64 @@ public class LocalizacaoService {
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            ResponseEntity<OpenCageResponse> response =
-                    restTemplate.exchange(
-                            url,
-                            HttpMethod.GET,
-                            entity,
-                            OpenCageResponse.class
-                    );
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            );
 
-            if (response.getBody() == null ||
-                    response.getBody().getResults() == null ||
-                    response.getBody().getResults().isEmpty()) {
-
-                throw new RuntimeException("Endereço não encontrado");
+            if (response.getBody() == null || response.getBody().isEmpty()) {
+                throw new RuntimeException("Resposta vazia do Photon");
             }
 
-            Double latitude = response.getBody()
-                    .getResults()
-                    .get(0)
-                    .getGeometry()
-                    .getLat();
+            ObjectMapper mapper = new ObjectMapper();
 
-            Double longitude = response.getBody()
-                    .getResults()
-                    .get(0)
-                    .getGeometry()
-                    .getLng();
+            PhotonResponse photon = mapper.readValue(
+                    response.getBody(),
+                    PhotonResponse.class
+            );
 
-            System.out.println("📍 LAT: " + latitude);
-            System.out.println("📍 LON: " + longitude);
+            if (photon.getFeatures() == null || photon.getFeatures().isEmpty()) {
+                throw new RuntimeException("Nenhum resultado encontrado no Photon");
+            }
+
+            // 🔥 SELEÇÃO INTELIGENTE DO MELHOR RESULTADO
+            PhotonResponse.Feature melhor = photon.getFeatures().stream()
+                    .filter(f -> f.getProperties() != null)
+                    .filter(f -> f.getProperties().getCity() != null)
+                    .filter(f -> f.getProperties().getCity().equalsIgnoreCase("São Paulo"))
+                    .findFirst()
+                    .orElse(photon.getFeatures().get(0));
+
+            double[] coords = melhor.getGeometry().getCoordinates();
+
+            System.out.println("======================================");
+            System.out.println("📍 RESULTADO ESCOLHIDO:");
+            System.out.println("🏙️ Cidade: " + melhor.getProperties().getCity());
+            System.out.println("📍 LAT: " + coords[1]);
+            System.out.println("📍 LON: " + coords[0]);
 
             LocalizacaoModel localizacao = new LocalizacaoModel();
-            localizacao.setLatitude(latitude);
-            localizacao.setLongitude(longitude);
+            localizacao.setLatitude(coords[1]);
+            localizacao.setLongitude(coords[0]);
 
             return localizacao;
 
         } catch (Exception e) {
-            System.out.println("❌ Erro detalhado: " + e.getMessage());
-            throw new RuntimeException("Erro ao buscar coordenadas", e);
+            System.out.println("❌ ERRO DETALHADO:");
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao buscar coordenadas com Photon", e);
         }
+
     }
 
 
     public  String montarEndereco (EnderecoModel endereco){
 
         String enderecoCompleto = String.format("%s, %s, Brasil",
-                valorSeguro(endereco.getRua()).trim(),
-                valorSeguro(endereco.getCidade()).trim()
+                valorSeguro(endereco.getRua()),
+                valorSeguro(endereco.getCidade())
         );
 
         System.out.println("📦 Endereço montado: " + enderecoCompleto);
