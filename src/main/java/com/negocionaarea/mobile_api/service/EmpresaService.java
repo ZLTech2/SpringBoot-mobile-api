@@ -7,13 +7,17 @@ import com.negocionaarea.mobile_api.model.EmpresaModel;
 import com.negocionaarea.mobile_api.model.EnderecoModel;
 import com.negocionaarea.mobile_api.repository.EmpresaRepository;
 import com.negocionaarea.mobile_api.dto.Role;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class EmpresaService {
+    private static final String DEFAULT_CIDADE = "Sao Paulo";
+    private static final String DEFAULT_ESTADO = "SP";
 
     private final EmpresaRepository empresaRepository;
     private final PasswordEncoder passwordEncoder;
@@ -24,6 +28,13 @@ public class EmpresaService {
     }
 
     public EmpresaResponse create(EmpresaRequest dto) {
+        if (dto == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload invalido");
+        }
+        if (dto.getEndereco() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "endereco e obrigatorio");
+        }
+
         EmpresaModel empresa = new EmpresaModel();
         // ACRESCENTANDO AS VALIDAÇÕES:
         if (empresaRepository.existsByCnpj(dto.getCnpj())) {
@@ -48,8 +59,9 @@ public class EmpresaService {
         endereco.setRua(dto.getEndereco().getRua());
         endereco.setNumero(dto.getEndereco().getNumero());
         endereco.setBairro(dto.getEndereco().getBairro());
-        endereco.setCidade(dto.getEndereco().getCidade());
         endereco.setCep(dto.getEndereco().getCep());
+        endereco.setCidade(defaultCidade(dto.getEndereco().getCidade()));
+        endereco.setEstado(DEFAULT_ESTADO);
 
         empresa.setEndereco(endereco);
 
@@ -94,5 +106,13 @@ public class EmpresaService {
                     return response;
                 })
                 .collect(Collectors.toList());
+    }
+
+    private String defaultCidade(String cidade) {
+        if (cidade == null) {
+            return DEFAULT_CIDADE;
+        }
+        String t = cidade.trim();
+        return t.isEmpty() ? DEFAULT_CIDADE : t;
     }
 }

@@ -43,6 +43,8 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/login/cliente").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/login/empresa").permitAll()
                         .requestMatchers(HttpMethod.POST, "/empresas").permitAll()
                         .requestMatchers(HttpMethod.POST, "/clientes").permitAll()
                         .requestMatchers(HttpMethod.GET, "/produtos/**").permitAll()
