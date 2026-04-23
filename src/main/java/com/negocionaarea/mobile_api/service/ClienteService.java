@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.negocionaarea.mobile_api.dto.ClienteRequest;
 import com.negocionaarea.mobile_api.dto.ClienteResponse;
+import com.negocionaarea.mobile_api.dto.EnderecoRequest;
 import com.negocionaarea.mobile_api.dto.Role;
 import com.negocionaarea.mobile_api.model.ClienteModel;
 import com.negocionaarea.mobile_api.model.EnderecoModel;
@@ -15,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class ClienteService {
+    private static final String DEFAULT_CIDADE = "Sao Paulo";
+    private static final String DEFAULT_ESTADO = "SP";
 
     private final ClienteRepository repository;
     private final PasswordEncoder passwordEncoder;
@@ -26,6 +31,12 @@ public class ClienteService {
 
 
     public ClienteResponse salvar(ClienteRequest dto) {
+        if (dto == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload invalido");
+        }
+        if (dto.getEndereco() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "endereco e obrigatorio");
+        }
 
         ClienteModel cliente = new ClienteModel();
 
@@ -37,11 +48,13 @@ public class ClienteService {
         cliente.setRole(Role.CUSTOMER);
 
         EnderecoModel endereco = new EnderecoModel();
-        endereco.setRua(dto.getEndereco().getRua());
-        endereco.setNumero(dto.getEndereco().getNumero());
-        endereco.setBairro(dto.getEndereco().getBairro());
-        endereco.setCidade(dto.getEndereco().getCidade());
-        endereco.setCep(dto.getEndereco().getCep());
+        EnderecoRequest enderecoDto = dto.getEndereco();
+        endereco.setRua(enderecoDto.getRua());
+        endereco.setNumero(enderecoDto.getNumero());
+        endereco.setBairro(enderecoDto.getBairro());
+        endereco.setCep(enderecoDto.getCep());
+        endereco.setCidade(defaultCidade(enderecoDto.getCidade()));
+        endereco.setEstado(DEFAULT_ESTADO);
 
         cliente.setEndereco(endereco);
 
@@ -53,7 +66,14 @@ public class ClienteService {
         response.setEmail(cliente.getEmail());
         response.setUrlPerfil(cliente.getUrlPerfil());
         response.setTelefone(cliente.getTelefone());
-        response.setEndereco(dto.getEndereco());
+
+        EnderecoRequest enderecoResp = new EnderecoRequest();
+        enderecoResp.setRua(cliente.getEndereco().getRua());
+        enderecoResp.setNumero(cliente.getEndereco().getNumero());
+        enderecoResp.setBairro(cliente.getEndereco().getBairro());
+        enderecoResp.setCidade(cliente.getEndereco().getCidade());
+        enderecoResp.setCep(cliente.getEndereco().getCep());
+        response.setEndereco(enderecoResp);
 
         return response;
     }
@@ -72,5 +92,13 @@ public class ClienteService {
             return response;
 
         }).collect(Collectors.toList());
+    }
+
+    private String defaultCidade(String cidade) {
+        if (cidade == null) {
+            return DEFAULT_CIDADE;
+        }
+        String t = cidade.trim();
+        return t.isEmpty() ? DEFAULT_CIDADE : t;
     }
 }

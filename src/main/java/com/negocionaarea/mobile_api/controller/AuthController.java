@@ -2,6 +2,7 @@ package com.negocionaarea.mobile_api.controller;
 
 import com.negocionaarea.mobile_api.dto.LoginRequest;
 import com.negocionaarea.mobile_api.dto.LoginResponse;
+import com.negocionaarea.mobile_api.dto.LoginCredentialsRequest;
 import com.negocionaarea.mobile_api.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,26 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
             LoginResponse response = authService.login(request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(401).body(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/login/cliente")
+    public ResponseEntity<?> loginCliente(@RequestBody LoginCredentialsRequest request) {
+        try {
+            LoginResponse response = authService.loginCliente(request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(401).body(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/login/empresa")
+    public ResponseEntity<?> loginEmpresa(@RequestBody LoginCredentialsRequest request) {
+        try {
+            LoginResponse response = authService.loginEmpresa(request);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.status(401).body(ex.getMessage());
