@@ -13,7 +13,7 @@ public interface PreferenciaNotificacaoRepository extends JpaRepository<Preferen
     SELECT DISTINCT pn.*
     FROM PREFERENCIA_NOTIFICACAO pn
     JOIN CLIENTES c ON pn.CLIENTE_ID = c.ID
-    JOIN PREFERENCIA_CATEGORIAS pc ON pc.PREFERENCIA_ID = pn.ID
+    LEFT JOIN PREFERENCIA_CATEGORIAS pc ON pc.PREFERENCIA_ID = pn.ID
     JOIN EMPRESAS e ON e.ID = :empresaId
     WHERE 
         (
@@ -33,7 +33,7 @@ public interface PreferenciaNotificacaoRepository extends JpaRepository<Preferen
             sin(radians(c.LATITUDE))
         )
     ) <= pn.RAIO_MAXIMO_KM
-    """, nativeQuery = true)
+""", nativeQuery = true)
     List<PreferenciaNotificacaoModel> buscarUsuariosParaNotificacao(
             @Param("categoria") String categoria,
             @Param("empresaId") UUID empresaId
