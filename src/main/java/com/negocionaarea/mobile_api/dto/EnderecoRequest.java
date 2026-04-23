@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class EnderecoRequest {
     private String rua;
-    private String numero;
+    private int numero;
     private String bairro;
     private String cidade;
     private String cep;

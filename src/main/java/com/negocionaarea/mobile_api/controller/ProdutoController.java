@@ -4,10 +4,12 @@ import com.negocionaarea.mobile_api.dto.ProdutoCreateRequest;
 import com.negocionaarea.mobile_api.dto.ProdutoResponse;
 import com.negocionaarea.mobile_api.dto.ProdutoUpdateRequest;
 import com.negocionaarea.mobile_api.service.ProdutoService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -54,5 +56,13 @@ public class ProdutoController {
     @PreAuthorize("hasRole('ENTERPRISE')")
     public ResponseEntity<ProdutoResponse> update(@PathVariable UUID id, @RequestBody ProdutoUpdateRequest request, JwtAuthenticationToken auth) {
         return ResponseEntity.ok(produtoService.update(id, request, auth.getToken().getSubject()));
+    }
+
+    @PostMapping(value = "/{id}/imagem", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ENTERPRISE')")
+    public ResponseEntity<ProdutoResponse> uploadImagem(@PathVariable UUID id,
+                                                       @RequestParam("imagem") MultipartFile imagem,
+                                                       JwtAuthenticationToken auth) {
+        return ResponseEntity.ok(produtoService.uploadImagem(id, imagem, auth.getToken().getSubject()));
     }
 }

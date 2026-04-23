@@ -41,7 +41,7 @@ public class ClienteService {
 
         EnderecoModel endereco = new EnderecoModel();
         endereco.setRua(dto.getEndereco().getRua());
-        endereco.setNumero(Integer.parseInt(dto.getEndereco().getNumero()));
+        endereco.setNumero(dto.getEndereco().getNumero());
         endereco.setBairro(dto.getEndereco().getBairro());
         endereco.setCidade(dto.getEndereco().getCidade());
         endereco.setCep(dto.getEndereco().getCep());
