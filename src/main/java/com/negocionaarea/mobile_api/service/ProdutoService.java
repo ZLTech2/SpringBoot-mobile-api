@@ -21,11 +21,13 @@ public class ProdutoService {
     private final EmpresaRepository empresaRepository;
     private final ProdutoRepository produtoRepository;
     private final FileStorageService fileStorageService;
+    private final PreferenciaNotificacaoService preferenciaNotificacao;
 
-    public ProdutoService(EmpresaRepository empresaRepository, ProdutoRepository produtoRepository, FileStorageService fileStorageService) {
+    public ProdutoService(EmpresaRepository empresaRepository, ProdutoRepository produtoRepository, FileStorageService fileStorageService, PreferenciaNotificacaoService preferenciaNotificacao) {
         this.empresaRepository = empresaRepository;
         this.produtoRepository = produtoRepository;
         this.fileStorageService = fileStorageService;
+        this.preferenciaNotificacao = preferenciaNotificacao;
     }
 
     public ProdutoResponse create(ProdutoCreateRequest request, String empresaEmail) {
@@ -39,7 +41,12 @@ public class ProdutoService {
                 .orElseThrow(() -> new ResponseStatusException(FORBIDDEN, "Empresa autenticada nao encontrada"));
         produto.setEmpresa(empresa);
 
-        return toResponse(produtoRepository.save(produto));
+        produto = produtoRepository.save(produto);
+
+        preferenciaNotificacao.dispararNotificacoes(produto);
+        System.out.println();
+
+        return toResponse(produto);
     }
 
     public List<ProdutoResponse> getAll() {
