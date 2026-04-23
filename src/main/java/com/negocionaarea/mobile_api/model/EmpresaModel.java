@@ -43,9 +43,9 @@ public class EmpresaModel {
     private String senha; //
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role roleEmpresa;
 
-    @Embedded
+   @Embedded
     private EnderecoModel endereco;
 
     @Embedded
