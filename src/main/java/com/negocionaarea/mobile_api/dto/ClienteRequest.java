@@ -13,6 +13,4 @@ public class ClienteRequest {
     private String urlPerfil;
     private String telefone;
 
-    // endereço separado
-    private EnderecoRequest endereco;
 }

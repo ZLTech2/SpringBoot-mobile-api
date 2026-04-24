@@ -1,5 +1,6 @@
 package com.negocionaarea.mobile_api.dto;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import lombok.Getter;
@@ -14,5 +15,5 @@ public class ClienteResponse {
     private String email;
     private String urlPerfil;
     private String telefone;
-    private EnderecoRequest endereco;
+    private Instant createdAt;
 }

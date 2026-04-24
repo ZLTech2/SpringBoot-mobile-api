@@ -18,8 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class ClienteService {
-    private static final String DEFAULT_CIDADE = "Sao Paulo";
-    private static final String DEFAULT_ESTADO = "SP";
 
     private final ClienteRepository repository;
     private final PasswordEncoder passwordEncoder;
@@ -34,29 +32,32 @@ public class ClienteService {
         if (dto == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload invalido");
         }
-        if (dto.getEndereco() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "endereco e obrigatorio");
+
+        if (dto.getNome() == null || dto.getNome().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "nome e obrigatorio");
+        }
+        if (dto.getEmail() == null || dto.getEmail().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email e obrigatorio");
+        }
+        if (dto.getSenha() == null || dto.getSenha().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "senha e obrigatoria");
+        }
+        if (dto.getTelefone() == null || dto.getTelefone().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "telefone e obrigatorio");
+        }
+        if (dto.getUrlPerfil() == null || dto.getUrlPerfil().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "urlPerfil e obrigatorio");
         }
 
         ClienteModel cliente = new ClienteModel();
 
         cliente.setNome(dto.getNome());
         cliente.setEmail(dto.getEmail());
+        cliente.setCreatedAt(cliente.getCreatedAt());
         cliente.setSenha(passwordEncoder.encode(dto.getSenha()));
         cliente.setUrlPerfil(dto.getUrlPerfil());
         cliente.setTelefone(dto.getTelefone());
         cliente.setRole(Role.CUSTOMER);
-
-        EnderecoModel endereco = new EnderecoModel();
-        EnderecoRequest enderecoDto = dto.getEndereco();
-        endereco.setRua(enderecoDto.getRua());
-        endereco.setNumero(enderecoDto.getNumero());
-        endereco.setBairro(enderecoDto.getBairro());
-        endereco.setCep(enderecoDto.getCep());
-        endereco.setCidade(defaultCidade(enderecoDto.getCidade()));
-        endereco.setEstado(DEFAULT_ESTADO);
-
-        cliente.setEndereco(endereco);
 
         cliente = repository.save(cliente);
 
@@ -67,14 +68,6 @@ public class ClienteService {
         response.setUrlPerfil(cliente.getUrlPerfil());
         response.setTelefone(cliente.getTelefone());
 
-        EnderecoRequest enderecoResp = new EnderecoRequest();
-        enderecoResp.setRua(cliente.getEndereco().getRua());
-        enderecoResp.setNumero(cliente.getEndereco().getNumero());
-        enderecoResp.setBairro(cliente.getEndereco().getBairro());
-        enderecoResp.setCidade(cliente.getEndereco().getCidade());
-        enderecoResp.setCep(cliente.getEndereco().getCep());
-        response.setEndereco(enderecoResp);
-
         return response;
     }
 
@@ -84,6 +77,7 @@ public class ClienteService {
 
             ClienteResponse response = new ClienteResponse();
             response.setId(cliente.getId());
+            response.setCreatedAt(cliente.getCreatedAt());
             response.setNome(cliente.getNome());
             response.setEmail(cliente.getEmail());
             response.setUrlPerfil(cliente.getUrlPerfil());
@@ -92,13 +86,5 @@ public class ClienteService {
             return response;
 
         }).collect(Collectors.toList());
-    }
-
-    private String defaultCidade(String cidade) {
-        if (cidade == null) {
-            return DEFAULT_CIDADE;
-        }
-        String t = cidade.trim();
-        return t.isEmpty() ? DEFAULT_CIDADE : t;
     }
 }

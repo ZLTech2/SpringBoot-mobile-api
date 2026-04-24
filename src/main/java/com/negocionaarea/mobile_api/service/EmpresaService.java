@@ -71,6 +71,7 @@ public class EmpresaService {
         //Response
         EmpresaResponse response = new EmpresaResponse();
         response.setId(empresa.getId());
+        response.setCreatedAt(empresa.getCreatedAt());
         response.setNome(empresa.getNome());
         response.setCnpj(empresa.getCnpj());
         response.setCategoria(empresa.getCategoria());
@@ -97,6 +98,7 @@ public class EmpresaService {
                 .map(empresa -> {
                     EmpresaResponse response = new EmpresaResponse();
                     response.setId(empresa.getId());
+                    response.setCreatedAt(empresa.getCreatedAt());
                     response.setNome(empresa.getNome());
                     response.setTelefone(empresa.getTelefone());
                     response.setCnpj(empresa.getCnpj());
