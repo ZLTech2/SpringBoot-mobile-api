@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +22,9 @@ public class EmpresaModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
     @Column(nullable = false, length = 100)
     private String nome;
 
@@ -52,4 +56,11 @@ public class EmpresaModel {
     @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<ProdutoModel> posts;
+
+    @PrePersist
+    void prePersist() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+    }
 }
