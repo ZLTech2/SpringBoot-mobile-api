@@ -50,4 +50,14 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/login/auto")
+    public ResponseEntity<?>loginAuto(@RequestBody LoginCredentialsRequest request){
+        try{
+            LoginResponse response = authService.loginAuto(request);
+            return ResponseEntity.ok(response);
+        }catch(IllegalArgumentException ex){
+            return ResponseEntity.status(401).body(ex.getMessage());
+        }
+    }
+
 }

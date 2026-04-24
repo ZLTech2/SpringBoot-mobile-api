@@ -51,7 +51,7 @@ public class EmpresaService {
         empresa.setCategoria(dto.getCategoria());
         empresa.setTelefone(dto.getTelefone());
         empresa.setDescricao(dto.getDescricao());
-        empresa.setEmail(dto.getEmail());
+        empresa.setEmail(dto.getEmail().trim().toLowerCase());
         empresa.setSenha(passwordEncoder.encode(dto.getSenha()));
         empresa.setRoleEmpresa(Role.ENTERPRISE);
 
