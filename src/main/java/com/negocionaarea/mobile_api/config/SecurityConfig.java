@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login/cliente").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login/empresa").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/login/auto").permitAll()
                         .requestMatchers(HttpMethod.POST, "/empresas").permitAll()
                         .requestMatchers(HttpMethod.POST, "/clientes").permitAll()
                         .requestMatchers(HttpMethod.GET, "/produtos/**").permitAll()

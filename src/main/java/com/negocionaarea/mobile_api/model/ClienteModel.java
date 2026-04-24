@@ -30,9 +30,6 @@ public class ClienteModel {
     @Column(nullable = false, length = 500)
     private String urlPerfil;
 
-    @Column(name = "criado_em", nullable = false, updatable = false)
-    private Instant createdAt;
-
     @Enumerated(EnumType.STRING)
     private Role role;
 

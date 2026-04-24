@@ -52,8 +52,7 @@ public class ClienteService {
         ClienteModel cliente = new ClienteModel();
 
         cliente.setNome(dto.getNome());
-        cliente.setEmail(dto.getEmail());
-        cliente.setCreatedAt(cliente.getCreatedAt());
+        cliente.setEmail(dto.getEmail().trim().toLowerCase());
         cliente.setSenha(passwordEncoder.encode(dto.getSenha()));
         cliente.setUrlPerfil(dto.getUrlPerfil());
         cliente.setTelefone(dto.getTelefone());
@@ -77,7 +76,6 @@ public class ClienteService {
 
             ClienteResponse response = new ClienteResponse();
             response.setId(cliente.getId());
-            response.setCreatedAt(cliente.getCreatedAt());
             response.setNome(cliente.getNome());
             response.setEmail(cliente.getEmail());
             response.setUrlPerfil(cliente.getUrlPerfil());

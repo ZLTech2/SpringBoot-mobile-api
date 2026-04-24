@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -66,6 +67,45 @@ public class AuthService {
         }
         return login(request.getEmail(), request.getSenha(), "empresa");
     }
+
+    public LoginResponse loginAuto(LoginCredentialsRequest request){
+        if(request == null || request.getEmail() == null || request.getSenha()== null){
+            throw new IllegalArgumentException("Email, senha são obrigatorios");
+        }
+
+        String email = request.getEmail().trim().toLowerCase();
+        String senha = request.getSenha();
+
+        System.out.println(">>> EMAIL RECEBIDO: " + email);
+        System.out.println(">>> SENHA RECEBIDA: " + senha);
+
+        Optional<EmpresaModel> empresa = empresaRepository.findByEmail(email);
+        System.out.println(">>> EMPRESA ENCONTRADA: " + empresa.isPresent());
+
+        if (empresa.isPresent()) {
+            boolean senhaOk = passwordEncoder.matches(senha, empresa.get().getSenha());
+            System.out.println(">>> SENHA BATE: " + senhaOk);
+            if (!senhaOk) {
+                throw new IllegalArgumentException("Credenciais invalidas");
+            }
+            return login(email, senha, "empresa");
+        }
+
+        Optional<ClienteModel> cliente = clienteRepository.findByEmail(email);
+        System.out.println(">>> CLIENTE ENCONTRADO: " + cliente.isPresent());
+
+        if (cliente.isPresent()) {
+            boolean senhaOk = passwordEncoder.matches(senha, cliente.get().getSenha());
+            System.out.println(">>> SENHA BATE: " + senhaOk);
+            if (!senhaOk) {
+                throw new IllegalArgumentException("Credenciais invalidas");
+            }
+            return login(email, senha, "cliente");
+        }
+
+        throw new IllegalArgumentException("Credenciais invalidas");
+    }
+
 
     public LoginResponse login(String emailRaw, String senhaRaw, String tipoRaw) {
         if (emailRaw == null || senhaRaw == null || tipoRaw == null) {
