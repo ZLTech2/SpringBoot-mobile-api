@@ -39,30 +39,15 @@ public class PreferenciaNotificacaoService {
 
     @Async
     public void dispararNotificacoes(ProdutoModel novoProduto){
-        System.out.println("🔥 ENTROU NO dispararNotificacoes");
-        System.out.println("📦 Produto: " + novoProduto.getNome());
-        System.out.println("🏢 Empresa ID: " + novoProduto.getEmpresa().getId());
-        System.out.println("🏷️ Categoria: " + novoProduto.getEmpresa().getCategoria());
+
         EmpresaModel empresa = novoProduto.getEmpresa();
         //usa a query
         List<PreferenciaNotificacaoModel> preferencias = preferenciaNotificacaoRepository.buscarUsuariosParaNotificacao(empresa.getCategoria(), novoProduto.getEmpresa().getId());
 
         //percorre para enviar o email
         for (PreferenciaNotificacaoModel pref : preferencias){
-            System.out.println("➡️ Entrou no FOR");
 
             ClienteModel cliente = pref.getCliente();
-
-            System.out.println("👤 Cliente: " + cliente.getEmail());
-            System.out.println("🎯 Aceita promo: " + pref.isReceberQualquerPromo());
-            System.out.println("💰 Produto é promo: " + novoProduto.isPromocao());
-
-            if(novoProduto.isPromocao() && !pref.isReceberQualquerPromo()){
-                System.out.println("⛔ BLOQUEADO POR REGRA DE PROMO");
-                continue;
-            }
-
-            System.out.println("📧 ENVIANDO EMAIL...");
 
             enviarEmail(cliente, novoProduto);
             System.out.println("✅ Email enviado para: " + cliente.getEmail());
@@ -86,6 +71,7 @@ public class PreferenciaNotificacaoService {
 
     private void enviarEmail(ClienteModel cliente, ProdutoModel produto){
         try {
+            //Objeto para enviar o email e o qual eu vou manipular
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -93,7 +79,7 @@ public class PreferenciaNotificacaoService {
             helper.setTo(cliente.getEmail());
             helper.setSubject("Nova oferta " + produto.getNome());
 
-            //contexto
+            //contexto para substituir as variaveis no template
             Context context = new Context();
             context.setVariable("nomeCliente", cliente.getNome());
             context.setVariable("nomeProduto", produto.getNome());
@@ -109,8 +95,6 @@ public class PreferenciaNotificacaoService {
             helper.setText(html, true);
             helper.addInline("logoEmpresa", new ClassPathResource("images/logoApp.png"));
             ClassPathResource resource = new ClassPathResource("images/logoApp.png");
-            System.out.println(resource.getPath());
-            System.out.println("Imagem existe? " + resource.exists());
 
             javaMailSender.send(message);
 
