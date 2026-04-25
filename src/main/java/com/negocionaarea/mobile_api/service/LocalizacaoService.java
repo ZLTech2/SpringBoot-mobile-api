@@ -69,14 +69,14 @@ public class LocalizacaoService {
             }
 
             // filtro para pegar a latitude e longitude
-            PhotonResponse.Feature melhor = photon.getFeatures().stream()
+            PhotonResponse.Feature filtro = photon.getFeatures().stream()
                     .filter(f -> f.getProperties() != null)
                     .filter(f -> f.getProperties().getCity() != null)
                     .filter(f -> f.getProperties().getCity().equalsIgnoreCase("São Paulo"))
                     .findFirst()
                     .orElse(photon.getFeatures().get(0));
 
-            double[] coords = melhor.getGeometry().getCoordinates();
+            double[] coords = filtro.getGeometry().getCoordinates();
 
 
             System.out.println("📍 LAT: " + coords[1]);
