@@ -5,6 +5,7 @@ import com.negocionaarea.mobile_api.dto.EmpresaResponse;
 import com.negocionaarea.mobile_api.dto.EnderecoResponse;
 import com.negocionaarea.mobile_api.model.EmpresaModel;
 import com.negocionaarea.mobile_api.model.EnderecoModel;
+import com.negocionaarea.mobile_api.model.LocalizacaoModel;
 import com.negocionaarea.mobile_api.repository.EmpresaRepository;
 import com.negocionaarea.mobile_api.dto.Role;
 import org.springframework.http.HttpStatus;
@@ -21,10 +22,12 @@ public class EmpresaService {
 
     private final EmpresaRepository empresaRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LocalizacaoService localizacaoService;
 
-    public EmpresaService(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder) {
+    public EmpresaService(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder, LocalizacaoService localizacaoService) {
         this.empresaRepository = empresaRepository;
         this.passwordEncoder = passwordEncoder;
+        this.localizacaoService = localizacaoService;
     }
 
     public EmpresaResponse create(EmpresaRequest dto) {
@@ -53,7 +56,7 @@ public class EmpresaService {
         empresa.setDescricao(dto.getDescricao());
         empresa.setEmail(dto.getEmail().trim().toLowerCase());
         empresa.setSenha(passwordEncoder.encode(dto.getSenha()));
-        empresa.setRoleEmpresa(Role.ENTERPRISE);
+        empresa.setRole(Role.ENTERPRISE);
 
         EnderecoModel endereco = new EnderecoModel();
         endereco.setRua(dto.getEndereco().getRua());
@@ -64,6 +67,12 @@ public class EmpresaService {
         endereco.setEstado(DEFAULT_ESTADO);
 
         empresa.setEndereco(endereco);
+
+        //inserindo a latitude e longitude
+        String enderecoFormatado = localizacaoService.montarEndereco(empresa.getEndereco());
+        LocalizacaoModel localizacao = localizacaoService.buscarCoordenadas(enderecoFormatado);
+
+        empresa.setLocalizacao(localizacao);
 
         //salvando
         empresa = empresaRepository.save(empresa);
