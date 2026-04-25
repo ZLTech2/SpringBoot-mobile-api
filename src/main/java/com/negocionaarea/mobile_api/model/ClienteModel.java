@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,4 +38,10 @@ public class ClienteModel {
     //Relação do cliente com a entidade curtida
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL) //cascade reflete o que acontecer com o pai acontece com o filho
     private List<CurtidaModel>curtidas;
+
+    @Embedded
+    private EnderecoModel endereco;
+
+    @Embedded
+    private LocalizacaoModel localizacao;
 }
