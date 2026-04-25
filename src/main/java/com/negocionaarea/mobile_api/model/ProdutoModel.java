@@ -33,6 +33,7 @@ public class ProdutoModel {
     // O upload em si pode ser feito via endpoint multipart e depois setado aqui.
     @Column(nullable = true, length = 1024)
     private String imagem;
+    private boolean isPromocao = false;
 
     // Relação do produto com a entidade empresa
     @ManyToOne

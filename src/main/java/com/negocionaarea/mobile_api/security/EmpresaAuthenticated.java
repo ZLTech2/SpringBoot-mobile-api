@@ -19,7 +19,7 @@ public class EmpresaAuthenticated implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(empresaModel.getRoleEmpresa() == Role.ENTERPRISE){
+        if(empresaModel.getRole() == Role.ENTERPRISE){
             return List.of(new SimpleGrantedAuthority("ROLE_ENTERPRISE"), new SimpleGrantedAuthority("ROLE_CUSTOMER"));
         }else {
             return List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER"));

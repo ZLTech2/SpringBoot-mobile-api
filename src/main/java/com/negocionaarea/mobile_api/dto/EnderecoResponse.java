@@ -15,4 +15,5 @@ public class EnderecoResponse {
     private String bairro;
     private String cidade;
     private String cep;
+    private String estado;
 }

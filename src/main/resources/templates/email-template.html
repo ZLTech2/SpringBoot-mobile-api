@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Email</title>
+</head>
+<body style="font-family: Arial; background-color: #f4f4f4; padding: 20px;">
+
+<div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px;">
+
+    <div style="background-color: #8800FF; padding: 10px; text-align: center; margin: auto; border-radius: 10px; ">
+        <img src="cid:logoEmpresa" alt="Logo" width="50"  style="display: block; margin: auto;">
+    </div>
+
+    <h2>Olá, <span th:text="${nomeCliente}"></span>! 👋</h2>
+
+    <p>Encontramos um produto que pode te interessar:</p>
+
+    <hr>
+
+    <p><strong>Produto:</strong> <span th:text="${nomeProduto}"></span></p>
+    <p><strong>Preço:</strong> R$ <span th:text="${preco}"></span></p>
+
+    <br>
+
+    <a th:href="${linkProduto}"
+       style="display: inline-block; padding: 10px 20px; background-color: #8800FF; color: white; text-decoration: none; border-radius: 5px;">
+        Ver Produto
+    </a>
+
+    <br><br>
+
+    <p style="font-size: 12px; color: gray;">
+        Você recebeu este e-mail porque demonstrou interesse em produtos similares.
+    </p>
+
+</div>
+
+</body>
+</html>

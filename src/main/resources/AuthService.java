@@ -2,7 +2,6 @@ package com.negocionaarea.mobile_api.service;
 
 import com.negocionaarea.mobile_api.dto.LoginRequest;
 import com.negocionaarea.mobile_api.dto.LoginResponse;
-import com.negocionaarea.mobile_api.dto.LoginCredentialsRequest;
 import com.negocionaarea.mobile_api.dto.Role;
 import com.negocionaarea.mobile_api.model.ClienteModel;
 import com.negocionaarea.mobile_api.model.EmpresaModel;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -51,82 +49,21 @@ public class AuthService {
             throw new IllegalArgumentException("Email, senha e tipo sao obrigatorios");
         }
 
-        return login(request.getEmail(), request.getSenha(), request.getTipo());
-    }
-
-    public LoginResponse loginCliente(LoginCredentialsRequest request) {
-        if (request == null || request.getEmail() == null || request.getSenha() == null) {
-            throw new IllegalArgumentException("Email e senha sao obrigatorios");
-        }
-        return login(request.getEmail(), request.getSenha(), "cliente");
-    }
-
-    public LoginResponse loginEmpresa(LoginCredentialsRequest request) {
-        if (request == null || request.getEmail() == null || request.getSenha() == null) {
-            throw new IllegalArgumentException("Email e senha sao obrigatorios");
-        }
-        return login(request.getEmail(), request.getSenha(), "empresa");
-    }
-
-    public LoginResponse loginAuto(LoginCredentialsRequest request){
-        if(request == null || request.getEmail() == null || request.getSenha()== null){
-            throw new IllegalArgumentException("Email, senha são obrigatorios");
-        }
-
+        String tipo = request.getTipo().trim().toLowerCase();
         String email = request.getEmail().trim().toLowerCase();
-        String senha = request.getSenha();
-
-        System.out.println(">>> EMAIL RECEBIDO: " + email);
-        System.out.println(">>> SENHA RECEBIDA: " + senha);
-
-        Optional<EmpresaModel> empresa = empresaRepository.findByEmail(email);
-        System.out.println(">>> EMPRESA ENCONTRADA: " + empresa.isPresent());
-
-        if (empresa.isPresent()) {
-            boolean senhaOk = passwordEncoder.matches(senha, empresa.get().getSenha());
-            System.out.println(">>> SENHA BATE: " + senhaOk);
-            if (!senhaOk) {
-                throw new IllegalArgumentException("Credenciais invalidas");
-            }
-            return login(email, senha, "empresa");
-        }
-
-        Optional<ClienteModel> cliente = clienteRepository.findByEmail(email);
-        System.out.println(">>> CLIENTE ENCONTRADO: " + cliente.isPresent());
-
-        if (cliente.isPresent()) {
-            boolean senhaOk = passwordEncoder.matches(senha, cliente.get().getSenha());
-            System.out.println(">>> SENHA BATE: " + senhaOk);
-            if (!senhaOk) {
-                throw new IllegalArgumentException("Credenciais invalidas");
-            }
-            return login(email, senha, "cliente");
-        }
-
-        throw new IllegalArgumentException("Credenciais invalidas");
-    }
-
-
-    public LoginResponse login(String emailRaw, String senhaRaw, String tipoRaw) {
-        if (emailRaw == null || senhaRaw == null || tipoRaw == null) {
-            throw new IllegalArgumentException("Email, senha e tipo sao obrigatorios");
-        }
-
-        String tipo = tipoRaw.trim().toLowerCase();
-        String email = emailRaw.trim().toLowerCase();
         List<String> roles;
 
         if ("empresa".equals(tipo)) {
             EmpresaModel empresa = empresaRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("Credenciais invalidas"));
-            if (!passwordEncoder.matches(senhaRaw, empresa.getSenha())) {
+            if (!passwordEncoder.matches(request.getSenha(), empresa.getSenha())) {
                 throw new IllegalArgumentException("Credenciais invalidas");
             }
             roles = List.of("ROLE_" + Role.ENTERPRISE.name());
         } else if ("cliente".equals(tipo)) {
             ClienteModel cliente = clienteRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("Credenciais invalidas"));
-            if (!passwordEncoder.matches(senhaRaw, cliente.getSenha())) {
+            if (!passwordEncoder.matches(request.getSenha(), cliente.getSenha())) {
                 throw new IllegalArgumentException("Credenciais invalidas");
             }
             roles = List.of("ROLE_" + Role.CUSTOMER.name());
@@ -152,3 +89,4 @@ public class AuthService {
         return new LoginResponse(token, tipo, expiresAt);
     }
 }
+
