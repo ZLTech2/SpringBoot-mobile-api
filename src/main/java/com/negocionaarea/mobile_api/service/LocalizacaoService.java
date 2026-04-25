@@ -20,8 +20,6 @@ import java.util.List;
 @Service
 public class LocalizacaoService {
 
-    @Value("${opencage.api.key}")
-    private String apikey;
     private final RestTemplate restTemplate;
 
     public LocalizacaoService(RestTemplate restTemplate) {
@@ -30,10 +28,10 @@ public class LocalizacaoService {
 
     public LocalizacaoModel buscarCoordenadas(String endereco){
         try {
-            System.out.println("======================================");
-            System.out.println("📍 BUSCA COM PHOTON");
+
             System.out.println("📦 Endereço recebido: " + endereco);
 
+            //fazendo a requisição a API
             String url = UriComponentsBuilder
                     .fromUriString("https://photon.komoot.io/api/")
                     .queryParam("q", endereco)
@@ -70,7 +68,7 @@ public class LocalizacaoService {
                 throw new RuntimeException("Nenhum resultado encontrado no Photon");
             }
 
-            // 🔥 SELEÇÃO INTELIGENTE DO MELHOR RESULTADO
+            // filtro para pegar a latitude e longitude
             PhotonResponse.Feature melhor = photon.getFeatures().stream()
                     .filter(f -> f.getProperties() != null)
                     .filter(f -> f.getProperties().getCity() != null)
@@ -80,9 +78,7 @@ public class LocalizacaoService {
 
             double[] coords = melhor.getGeometry().getCoordinates();
 
-            System.out.println("======================================");
-            System.out.println("📍 RESULTADO ESCOLHIDO:");
-            System.out.println("🏙️ Cidade: " + melhor.getProperties().getCity());
+
             System.out.println("📍 LAT: " + coords[1]);
             System.out.println("📍 LON: " + coords[0]);
 
@@ -93,7 +89,6 @@ public class LocalizacaoService {
             return localizacao;
 
         } catch (Exception e) {
-            System.out.println("❌ ERRO DETALHADO:");
             e.printStackTrace();
             throw new RuntimeException("Erro ao buscar coordenadas com Photon", e);
         }
@@ -107,8 +102,6 @@ public class LocalizacaoService {
                 valorSeguro(endereco.getRua()),
                 valorSeguro(endereco.getCidade())
         );
-
-        System.out.println("📦 Endereço montado: " + enderecoCompleto);
 
         return enderecoCompleto;
     }
