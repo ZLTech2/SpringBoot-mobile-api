@@ -12,5 +12,6 @@ public class ClienteRequest {
     private String senha;
     private String urlPerfil;
     private String telefone;
+    private EnderecoRequest endereco;
 
 }
