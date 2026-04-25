@@ -45,7 +45,7 @@ public class EmpresaService {
         empresa.setDescricao(dto.getDescricao());
         empresa.setEmail(dto.getEmail());
         empresa.setSenha(passwordEncoder.encode(dto.getSenha()));
-        empresa.setRoleEmpresa(Role.ENTERPRISE);
+        empresa.setRole(Role.ENTERPRISE);
 
         EnderecoModel endereco = new EnderecoModel();
         endereco.setRua(dto.getEndereco().getRua());
