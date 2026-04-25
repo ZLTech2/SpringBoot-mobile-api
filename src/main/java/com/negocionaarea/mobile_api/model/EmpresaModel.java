@@ -43,7 +43,7 @@ public class EmpresaModel {
     private String senha; //
 
     @Enumerated(EnumType.STRING)
-    private Role roleEmpresa;
+    private Role role;
 
    @Embedded
     private EnderecoModel endereco;
