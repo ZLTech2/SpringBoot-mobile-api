@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login/cliente").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login/empresa").permitAll()
@@ -53,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/notificacao/configuracao").permitAll()
                         .requestMatchers(HttpMethod.POST, "/produtos/cadastrar").permitAll()
                         .requestMatchers(HttpMethod.GET, "/produtos/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))

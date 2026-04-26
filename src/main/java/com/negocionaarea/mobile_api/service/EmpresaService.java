@@ -104,6 +104,22 @@ public class EmpresaService {
 
     }
 
+    public EmpresaResponse getMe(String email) {
+        EmpresaModel empresa = empresaRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada"));
+
+        EmpresaResponse response = new EmpresaResponse();
+        response.setId(empresa.getId());
+        response.setNome(empresa.getNome());
+        response.setDescricao(empresa.getDescricao());
+        response.setEmail(empresa.getEmail());
+        response.setTelefone(empresa.getTelefone());
+        response.setCategoria(empresa.getCategoria());
+        response.setCnpj(empresa.getCnpj());
+        response.setCreatedAt(empresa.getCreatedAt());
+
+        return response;
+    }
     public List<EmpresaResponse> findAll() {
         return empresaRepository.findAll()
                 .stream()

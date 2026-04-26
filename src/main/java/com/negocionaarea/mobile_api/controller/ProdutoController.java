@@ -36,7 +36,7 @@ public class ProdutoController {
     }
 
     @GetMapping("/minhaEmpresa")
-    @PreAuthorize("hasRole('ENTEPRISE')")
+    @PreAuthorize("hasRole('ENTERPRISE')")
     public ResponseEntity<List<ProdutoResponse>> getMeusProdutos(JwtAuthenticationToken auth){
         return ResponseEntity.ok(produtoService.getProdutosByEmpresa(auth.getToken().getSubject()));
     }
