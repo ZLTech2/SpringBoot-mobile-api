@@ -10,7 +10,6 @@ public class ClienteRequest {
     private String nome;
     private String email;
     private String senha;
-    private String urlPerfil;
     private String telefone;
     private EnderecoRequest endereco;
 

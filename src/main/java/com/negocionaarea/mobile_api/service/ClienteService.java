@@ -48,9 +48,6 @@ public class ClienteService {
         if (dto.getTelefone() == null || dto.getTelefone().trim().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "telefone e obrigatorio");
         }
-        if (dto.getUrlPerfil() == null || dto.getUrlPerfil().trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "urlPerfil e obrigatorio");
-        }
 
         ClienteModel cliente = new ClienteModel();
 
@@ -60,7 +57,6 @@ public class ClienteService {
         cliente.setNome(dto.getNome());
         cliente.setEmail(dto.getEmail().trim().toLowerCase());
         cliente.setSenha(passwordEncoder.encode(dto.getSenha()));
-        cliente.setUrlPerfil(dto.getUrlPerfil());
         cliente.setTelefone(dto.getTelefone());
         cliente.setRole(Role.CUSTOMER);
 
@@ -87,7 +83,6 @@ public class ClienteService {
         response.setId(cliente.getId());
         response.setNome(cliente.getNome());
         response.setEmail(cliente.getEmail());
-        response.setUrlPerfil(cliente.getUrlPerfil());
         response.setTelefone(cliente.getTelefone());
 
         return response;
@@ -102,7 +97,6 @@ public class ClienteService {
             response.setId(cliente.getId());
             response.setNome(cliente.getNome());
             response.setEmail(cliente.getEmail());
-            response.setUrlPerfil(cliente.getUrlPerfil());
             response.setTelefone(cliente.getTelefone());
 
             return response;
@@ -117,7 +111,6 @@ public class ClienteService {
         response.setId(cliente.getId());
         response.setNome(cliente.getNome());
         response.setEmail(cliente.getEmail());
-        response.setUrlPerfil(cliente.getUrlPerfil());
         response.setTelefone(cliente.getTelefone());
         return response;
     }
