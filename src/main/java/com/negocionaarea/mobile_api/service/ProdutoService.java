@@ -159,7 +159,8 @@ public class ProdutoService {
                 produto.getPrecoProduto(),
                 produto.getDataPostagem(),
                 produto.getImagem(),
-                produto.getEmpresa() == null ? null : produto.getEmpresa().getId()
+                produto.getEmpresa() == null ? null : produto.getEmpresa().getId(),
+                produto.getEmpresa() == null ? null : produto.getEmpresa().getNome()
         );
     }
 }

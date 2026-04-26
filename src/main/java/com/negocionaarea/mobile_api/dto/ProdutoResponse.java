@@ -10,7 +10,8 @@ public record ProdutoResponse(
         Double precoProduto,
         LocalDateTime dataPostagem,
         String imagem,
-        UUID empresaId
+        UUID empresaId,
+        String nomeEmpresa
 ) {
 }
 
