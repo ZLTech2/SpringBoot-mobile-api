@@ -53,6 +53,13 @@ public class ProdutoService {
         return produtoRepository.findAll().stream().map(ProdutoService::toResponse).toList();
     }
 
+    public List<ProdutoResponse>getProdutosByEmpresa(String empresaEmail){
+        EmpresaModel empresa = empresaRepository.findByEmail(empresaEmail)
+                .orElseThrow(()->new ResponseStatusException(FORBIDDEN, "Empresa não encontrada"));
+        return produtoRepository.findByEmpresa(empresa)
+                .stream().map(ProdutoService::toResponse).toList();
+    }
+
     public ProdutoResponse getbyId(UUID id) {
         ProdutoModel produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto nao encontrado com ID " + id));
