@@ -18,6 +18,7 @@ public class EmpresaResponse {
     private String telefone;
     private String email;
     private String descricao;
+    private String logoUrl;
     private EnderecoResponse endereco;
 
 }

@@ -110,6 +110,18 @@ public class ClienteService {
         }).collect(Collectors.toList());
     }
 
+    public ClienteResponse getMe(String email){
+        ClienteModel cliente = repository.findByEmail(email)
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
+        ClienteResponse response = new ClienteResponse();
+        response.setId(cliente.getId());
+        response.setNome(cliente.getNome());
+        response.setEmail(cliente.getEmail());
+        response.setUrlPerfil(cliente.getUrlPerfil());
+        response.setTelefone(cliente.getTelefone());
+        return response;
+    }
+
     private void validarSenha(String senha) {
         if (senha == null || senha.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha é obrigatória");

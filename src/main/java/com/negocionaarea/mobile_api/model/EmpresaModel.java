@@ -46,6 +46,9 @@ public class EmpresaModel {
     @Column(nullable = false, length = 100)
     private String senha; //
 
+    @Column(length = 1024)
+    private String logoUrl;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

@@ -1,18 +1,18 @@
 package com.negocionaarea.mobile_api.service;
 
-import com.negocionaarea.mobile_api.dto.EmpresaRequest;
-import com.negocionaarea.mobile_api.dto.EmpresaResponse;
-import com.negocionaarea.mobile_api.dto.EnderecoResponse;
+import com.negocionaarea.mobile_api.dto.*;
 import com.negocionaarea.mobile_api.model.EmpresaModel;
 import com.negocionaarea.mobile_api.model.EnderecoModel;
 import com.negocionaarea.mobile_api.model.LocalizacaoModel;
 import com.negocionaarea.mobile_api.repository.EmpresaRepository;
-import com.negocionaarea.mobile_api.dto.Role;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,11 +24,13 @@ public class EmpresaService {
     private final EmpresaRepository empresaRepository;
     private final PasswordEncoder passwordEncoder;
     private final LocalizacaoService localizacaoService;
+    private final FileStorageService fileStorageService;
 
-    public EmpresaService(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder, LocalizacaoService localizacaoService) {
+    public EmpresaService(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder, LocalizacaoService localizacaoService, FileStorageService fileStorageService) {
         this.empresaRepository = empresaRepository;
         this.passwordEncoder = passwordEncoder;
         this.localizacaoService = localizacaoService;
+        this.fileStorageService = fileStorageService;
     }
 
     public EmpresaResponse create(EmpresaRequest dto) {
@@ -116,6 +118,7 @@ public class EmpresaService {
         response.setTelefone(empresa.getTelefone());
         response.setCategoria(empresa.getCategoria());
         response.setCnpj(empresa.getCnpj());
+        response.setLogoUrl(empresa.getLogoUrl());
         response.setCreatedAt(empresa.getCreatedAt());
 
         return response;
@@ -158,5 +161,37 @@ public class EmpresaService {
                     "A senha deve ter no mínimo 8 caracteres, 1 letra maiúscula, 1 número e 1 caractere especial"
             );
         }
+    }
+
+    public EmpresaResponse updateMe(EmpresaUpdateRequest request, String email){
+        EmpresaModel empresa = empresaRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada"));
+        if (request.nome() != null) empresa.setNome(request.nome());
+        if (request.descricao() != null) empresa.setDescricao(request.descricao());
+
+        empresa = empresaRepository.save(empresa);
+
+        EmpresaResponse response = new EmpresaResponse();
+        response.setId(empresa.getId());
+        response.setNome(empresa.getNome());
+        response.setDescricao(empresa.getDescricao());
+        response.setLogoUrl(empresa.getLogoUrl());
+        return response;
+    }
+
+    public EmpresaResponse uploadLogo(MultipartFile logo, String email) {
+        EmpresaModel empresa = empresaRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada"));
+
+        var stored = fileStorageService.storeEmpresaLogo(empresa.getId(), logo);
+        empresa.setLogoUrl(stored.publicPath());
+        empresa = empresaRepository.save(empresa);
+
+        EmpresaResponse response = new EmpresaResponse();
+        response.setId(empresa.getId());
+        response.setNome(empresa.getNome());
+        response.setDescricao(empresa.getDescricao());
+        response.setLogoUrl(empresa.getLogoUrl());
+        return response;
     }
 }
