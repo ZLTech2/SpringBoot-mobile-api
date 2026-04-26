@@ -8,6 +8,7 @@ import com.negocionaarea.mobile_api.model.EnderecoModel;
 import com.negocionaarea.mobile_api.model.LocalizacaoModel;
 import com.negocionaarea.mobile_api.repository.EmpresaRepository;
 import com.negocionaarea.mobile_api.dto.Role;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,19 +36,21 @@ public class EmpresaService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload invalido");
         }
         if (dto.getEndereco() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "endereco e obrigatorio");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Endereço é obrigatorio");
         }
 
         EmpresaModel empresa = new EmpresaModel();
         // ACRESCENTANDO AS VALIDAÇÕES:
         if (empresaRepository.existsByCnpj(dto.getCnpj())) {
-            throw new RuntimeException("Este CNPJ já está sendo usado!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este CNPJ já está sendo usado!");
         }
 
         if (empresaRepository.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Este Email já está sendo usado!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Este Email já está sendo usado!");
         }
 
+        // validar senha
+        validarSenha(dto.getSenha());
         //Transferindo os dados
         empresa.setNome(dto.getNome());
         empresa.setCnpj(dto.getCnpj());
@@ -125,5 +128,19 @@ public class EmpresaService {
         }
         String t = cidade.trim();
         return t.isEmpty() ? DEFAULT_CIDADE : t;
+    }
+
+    private void validarSenha(String senha){
+        if(senha == null || senha.isBlank()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha é obrigatória");
+        }
+        String regex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,}$";
+
+        if(!senha.matches(regex)){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "A senha deve ter no mínimo 8 caracteres, 1 letra maiúscula, 1 número e 1 caractere especial"
+            );
+        }
     }
 }

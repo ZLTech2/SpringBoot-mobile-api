@@ -19,12 +19,12 @@ public class EmpresaController {
         this.empresaService = empresaService;
     }
 
-    @PostMapping("/cadastrar")
+    @PostMapping
     public EmpresaResponse create(@RequestBody EmpresaRequest request) {
         return empresaService.create(request);
     }
 
-    @GetMapping("/listar")
+    @GetMapping
     public List<EmpresaResponse> findAll() {
         return empresaService.findAll();
     }

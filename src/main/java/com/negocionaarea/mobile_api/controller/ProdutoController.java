@@ -23,7 +23,7 @@ public class ProdutoController {
         this.produtoService = produtoService;
     }
 
-    @PostMapping("/cadastrar")
+    @PostMapping
     @PreAuthorize("hasRole('ENTERPRISE')")
     public ResponseEntity<ProdutoResponse> create(@RequestBody ProdutoCreateRequest request, JwtAuthenticationToken auth) {
         return ResponseEntity.ok(produtoService.create(request, auth.getToken().getSubject()));

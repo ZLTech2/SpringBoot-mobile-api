@@ -54,6 +54,9 @@ public class ClienteService {
 
         ClienteModel cliente = new ClienteModel();
 
+
+        // validar senha
+        validarSenha(dto.getSenha());
         cliente.setNome(dto.getNome());
         cliente.setEmail(dto.getEmail().trim().toLowerCase());
         cliente.setSenha(passwordEncoder.encode(dto.getSenha()));
@@ -91,6 +94,7 @@ public class ClienteService {
     }
 
 
+
     public List<ClienteResponse> listar() {
         return repository.findAll().stream().map(cliente -> {
 
@@ -105,4 +109,19 @@ public class ClienteService {
 
         }).collect(Collectors.toList());
     }
+
+    private void validarSenha(String senha) {
+        if (senha == null || senha.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha é obrigatória");
+        }
+        String regex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,}$";
+
+        if (!senha.matches(regex)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "A senha deve ter no mínimo 8 caracteres, 1 letra maiúscula, 1 número e 1 caractere especial"
+            );
+        }
+    }
+
 }
