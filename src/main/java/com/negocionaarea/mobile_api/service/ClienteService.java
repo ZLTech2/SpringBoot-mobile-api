@@ -48,6 +48,9 @@ public class ClienteService {
         if (dto.getTelefone() == null || dto.getTelefone().trim().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "telefone e obrigatorio");
         }
+        if (dto.getDataNascimento() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "data de nascimento é obrigatória");
+        }
 
         ClienteModel cliente = new ClienteModel();
 
@@ -59,6 +62,7 @@ public class ClienteService {
         cliente.setSenha(passwordEncoder.encode(dto.getSenha()));
         cliente.setTelefone(dto.getTelefone());
         cliente.setRole(Role.CUSTOMER);
+        cliente.setDataNascimento(dto.getDataNascimento());
 
         EnderecoModel endereco = new EnderecoModel();
         endereco.setRua(dto.getEndereco().getRua());

@@ -14,5 +14,6 @@ public class EmpresaRequest {
     private String descricao;
     private String senha;
     private String role;
+    private Integer percentualCupomAniversario;
     private EnderecoRequest endereco;
 }

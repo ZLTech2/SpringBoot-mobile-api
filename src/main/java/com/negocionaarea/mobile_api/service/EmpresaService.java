@@ -51,6 +51,14 @@ public class EmpresaService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Este Email já está sendo usado!");
         }
 
+        if (dto.getPercentualCupomAniversario() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "percentual do cupom é obrigatório");
+        }
+
+        if (dto.getPercentualCupomAniversario() < 0 || dto.getPercentualCupomAniversario() > 100) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "percentual deve estar entre 0 e 100");
+        }
+
         // validar senha
         validarSenha(dto.getSenha());
         //Transferindo os dados
@@ -62,6 +70,7 @@ public class EmpresaService {
         empresa.setEmail(dto.getEmail().trim().toLowerCase());
         empresa.setSenha(passwordEncoder.encode(dto.getSenha()));
         empresa.setRole(Role.ENTERPRISE);
+        empresa.setPercentualCupomAniversario(dto.getPercentualCupomAniversario());
 
         EnderecoModel endereco = new EnderecoModel();
         endereco.setRua(dto.getEndereco().getRua());
@@ -92,6 +101,7 @@ public class EmpresaService {
         response.setTelefone(empresa.getTelefone());
         response.setEmail(empresa.getEmail());
         response.setDescricao(empresa.getDescricao());
+        response.setPercentualCupomAniversario(empresa.getPercentualCupomAniversario());
 
         EnderecoResponse enderecoResponse = new EnderecoResponse();
         enderecoResponse.setRua(empresa.getEndereco().getRua());

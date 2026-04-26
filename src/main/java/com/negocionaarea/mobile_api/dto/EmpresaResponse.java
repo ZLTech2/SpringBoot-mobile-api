@@ -19,6 +19,7 @@ public class EmpresaResponse {
     private String email;
     private String descricao;
     private String logoUrl;
+    private Integer percentualCupomAniversario;
     private EnderecoResponse endereco;
 
 }
