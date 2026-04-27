@@ -18,7 +18,7 @@ public interface PreferenciaNotificacaoRepository extends JpaRepository<Preferen
     JOIN empresas e ON e.id = :empresaId
     WHERE 
         (
-            pc.categoria = :categoria
+            LOWER(pc.categoria) = LOWER(:categoria)
             OR pn.receber_qualquer_promo = true
         )
     AND c.latitude IS NOT NULL
