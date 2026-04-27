@@ -39,6 +39,6 @@ public interface PreferenciaNotificacaoRepository extends JpaRepository<Preferen
             @Param("categoria") String categoria,
             @Param("empresaId") UUID empresaId
     );
-    Optional<PreferenciaNotificacaoModel> findByClienteId(UUID clienteId);
+    Optional<PreferenciaNotificacaoModel> findByCliente_Id(UUID clienteId);
 
 }
