@@ -54,7 +54,7 @@ public class PreferenciaNotificacaoService {
     }
 
     public PreferenciaNotificacaoModel salvar (PreferenciaNotificacaoRequest request, String email){
-        ClienteModel cliente = clienteRepository.findById(request.getClienteId())
+        ClienteModel cliente = clienteRepository.findByEmail(email)
                 .orElseThrow(()-> new UsernameNotFoundException("Cliente não encontrado"));
 
         PreferenciaNotificacaoModel pref = preferenciaNotificacaoRepository
