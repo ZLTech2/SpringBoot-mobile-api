@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface PreferenciaNotificacaoRepository extends JpaRepository<PreferenciaNotificacaoModel, UUID> {
@@ -38,5 +39,6 @@ public interface PreferenciaNotificacaoRepository extends JpaRepository<Preferen
             @Param("categoria") String categoria,
             @Param("empresaId") UUID empresaId
     );
+    Optional<PreferenciaNotificacaoModel> findByClienteId(UUID clienteId);
 
 }
