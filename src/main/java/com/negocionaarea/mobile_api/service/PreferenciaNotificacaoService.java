@@ -58,7 +58,7 @@ public class PreferenciaNotificacaoService {
                 .orElseThrow(()-> new UsernameNotFoundException("Cliente não encontrado"));
 
         PreferenciaNotificacaoModel pref = preferenciaNotificacaoRepository
-                .findByCliente_Id(request.getClienteId())
+                .findByCliente_Id(cliente.getId())
                 .orElse(new PreferenciaNotificacaoModel());;
 
         pref.setCliente(cliente);
