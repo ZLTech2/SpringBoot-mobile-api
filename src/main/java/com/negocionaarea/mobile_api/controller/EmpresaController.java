@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +36,12 @@ public class EmpresaController {
     public List<EmpresaResponse> findAll() {
         return empresaService.findAll();
     }
+
+    @GetMapping("{id}")
+    public ResponseEntity<EmpresaResponse> findById(@PathVariable UUID id) {
+        return ResponseEntity.ok(empresaService.findById(id));
+    }
+
 
     @GetMapping("me")
     @PreAuthorize("hasRole('ENTERPRISE')")

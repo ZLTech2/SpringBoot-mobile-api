@@ -41,6 +41,12 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoService.getProdutosByEmpresa(auth.getToken().getSubject()));
     }
 
+    @GetMapping("/empresa/{empresaId}")
+    public ResponseEntity<List<ProdutoResponse>> getProdutosPorEmpresa(@PathVariable UUID empresaId) {
+        return ResponseEntity.ok(produtoService.getProdutosPorEmpresaId(empresaId));
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<ProdutoResponse> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(produtoService.getbyId(id));

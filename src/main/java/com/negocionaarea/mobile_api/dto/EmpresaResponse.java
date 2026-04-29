@@ -21,5 +21,6 @@ public class EmpresaResponse {
     private String logoUrl;
     private Integer percentualCupomAniversario;
     private EnderecoResponse endereco;
-
+    private Double latitude;
+    private Double longitude;
 }

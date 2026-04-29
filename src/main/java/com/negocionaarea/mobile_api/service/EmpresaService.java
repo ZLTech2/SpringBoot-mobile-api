@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,7 +34,42 @@ public class EmpresaService {
         this.fileStorageService = fileStorageService;
     }
 
-    public EmpresaResponse create(EmpresaRequest dto) {
+    private EmpresaResponse toResponse(EmpresaModel empresa) {
+        EmpresaResponse response = new EmpresaResponse();
+        response.setId(empresa.getId());
+        response.setCreatedAt(empresa.getCreatedAt());
+        response.setNome(empresa.getNome());
+        response.setCnpj(empresa.getCnpj());
+        response.setCategoria(empresa.getCategoria());
+        response.setTelefone(empresa.getTelefone());
+        response.setEmail(empresa.getEmail());
+        response.setDescricao(empresa.getDescricao());
+        response.setLogoUrl(empresa.getLogoUrl());
+        response.setPercentualCupomAniversario(empresa.getPercentualCupomAniversario());
+
+
+        if (empresa.getEndereco() != null) {
+            EnderecoResponse enderecoResponse = new EnderecoResponse();
+            enderecoResponse.setRua(empresa.getEndereco().getRua());
+            enderecoResponse.setBairro(empresa.getEndereco().getBairro());
+            enderecoResponse.setCidade(empresa.getEndereco().getCidade());
+            enderecoResponse.setCep(empresa.getEndereco().getCep());
+            enderecoResponse.setNumero(empresa.getEndereco().getNumero());
+            enderecoResponse.setEstado(empresa.getEndereco().getEstado());
+            response.setEndereco(enderecoResponse);
+        }
+
+        if (empresa.getLocalizacao() != null) {
+            response.setLatitude(empresa.getLocalizacao().getLatitude());
+            response.setLongitude(empresa.getLocalizacao().getLongitude());
+        }
+
+        return response;
+
+    }
+
+
+        public EmpresaResponse create(EmpresaRequest dto) {
         if (dto == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payload invalido");
         }
@@ -91,65 +127,29 @@ public class EmpresaService {
         //salvando
         empresa = empresaRepository.save(empresa);
 
-        //Response
-        EmpresaResponse response = new EmpresaResponse();
-        response.setId(empresa.getId());
-        response.setCreatedAt(empresa.getCreatedAt());
-        response.setNome(empresa.getNome());
-        response.setCnpj(empresa.getCnpj());
-        response.setCategoria(empresa.getCategoria());
-        response.setTelefone(empresa.getTelefone());
-        response.setEmail(empresa.getEmail());
-        response.setDescricao(empresa.getDescricao());
-        response.setPercentualCupomAniversario(empresa.getPercentualCupomAniversario());
-
-        EnderecoResponse enderecoResponse = new EnderecoResponse();
-        enderecoResponse.setRua(empresa.getEndereco().getRua());
-        enderecoResponse.setBairro(empresa.getEndereco().getBairro());
-        enderecoResponse.setCidade(empresa.getEndereco().getCidade());
-        enderecoResponse.setCep(empresa.getEndereco().getCep());
-        enderecoResponse.setNumero(empresa.getEndereco().getNumero());
-
-        response.setEndereco(enderecoResponse);
-
-        return response;
-
+        return toResponse(empresa);
     }
 
     public EmpresaResponse getMe(String email) {
         EmpresaModel empresa = empresaRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada"));
-
-        EmpresaResponse response = new EmpresaResponse();
-        response.setId(empresa.getId());
-        response.setNome(empresa.getNome());
-        response.setDescricao(empresa.getDescricao());
-        response.setEmail(empresa.getEmail());
-        response.setTelefone(empresa.getTelefone());
-        response.setCategoria(empresa.getCategoria());
-        response.setCnpj(empresa.getCnpj());
-        response.setLogoUrl(empresa.getLogoUrl());
-        response.setCreatedAt(empresa.getCreatedAt());
-
-        return response;
+        return toResponse(empresa);
     }
+
+
+    public EmpresaResponse findById(UUID id) {
+        EmpresaModel empresa = empresaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada"));
+        return toResponse(empresa);
+    }
+
     public List<EmpresaResponse> findAll() {
         return empresaRepository.findAll()
                 .stream()
-                .map(empresa -> {
-                    EmpresaResponse response = new EmpresaResponse();
-                    response.setId(empresa.getId());
-                    response.setCreatedAt(empresa.getCreatedAt());
-                    response.setNome(empresa.getNome());
-                    response.setTelefone(empresa.getTelefone());
-                    response.setCnpj(empresa.getCnpj());
-                    response.setDescricao(empresa.getDescricao());
-                    response.setCategoria(empresa.getCategoria());
-
-                    return response;
-                })
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
+
 
     private String defaultCidade(String cidade) {
         if (cidade == null) {

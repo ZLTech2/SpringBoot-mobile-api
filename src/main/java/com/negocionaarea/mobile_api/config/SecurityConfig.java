@@ -54,6 +54,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/notificacao/configuracao").permitAll()
                         .requestMatchers(HttpMethod.POST, "/produtos/cadastrar").permitAll()
                         .requestMatchers(HttpMethod.GET, "/produtos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/empresas").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/empresas/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/produtos/empresa/{id}").permitAll()
 
                         .anyRequest().authenticated()
                 )

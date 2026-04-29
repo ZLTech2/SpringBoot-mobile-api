@@ -60,6 +60,14 @@ public class ProdutoService {
                 .stream().map(ProdutoService::toResponse).toList();
     }
 
+    public List<ProdutoResponse> getProdutosPorEmpresaId(UUID empresaId) {
+        EmpresaModel empresa = empresaRepository.findById(empresaId)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Empresa não encontrada"));
+        return produtoRepository.findByEmpresa(empresa)
+                .stream().map(ProdutoService::toResponse).toList();
+    }
+
+
     public ProdutoResponse getbyId(UUID id) {
         ProdutoModel produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto nao encontrado com ID " + id));
