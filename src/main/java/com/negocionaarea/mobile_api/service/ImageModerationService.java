@@ -10,13 +10,24 @@ import java.util.List;
 public class ImageModerationService {
     public boolean imagemEhApropriada(byte[] imagemBytes) {
         try {
+            com.google.auth.oauth2.GoogleCredentials credentials;
+
+            String credentialsJson = System.getenv("GOOGLE_CREDENTIALS_JSON");
+            if (credentialsJson != null && !credentialsJson.isBlank()) {
+                System.out.println("✅ Usando credenciais da variável de ambiente");
+                credentials = ServiceAccountCredentials.fromStream(
+                        new java.io.ByteArrayInputStream(credentialsJson.getBytes())
+                );
+            } else {
+                System.out.println("✅ Usando credenciais do arquivo local");
+                credentials = ServiceAccountCredentials.fromStream(
+                        getClass().getResourceAsStream("/google-credentials.json")
+                );
+            }
+
             ImageAnnotatorSettings settings = ImageAnnotatorSettings.newBuilder()
                     .setCredentialsProvider(
-                            com.google.api.gax.core.FixedCredentialsProvider.create(
-                                    ServiceAccountCredentials.fromStream(
-                                            getClass().getResourceAsStream("/google-credentials.json")
-                                    )
-                            )
+                            com.google.api.gax.core.FixedCredentialsProvider.create(credentials)
                     )
                     .build();
 
@@ -38,8 +49,6 @@ public class ImageModerationService {
                         .getResponses(0)
                         .getSafeSearchAnnotation();
 
-                // POSSIBLE = 2, LIKELY = 3, VERY_LIKELY = 4
-                // bloqueia a partir de LIKELY (3)
                 boolean adulto = safeSearch.getAdult().getNumber() >= 3;
                 boolean violencia = safeSearch.getViolence().getNumber() >= 3;
                 boolean sensual = safeSearch.getRacy().getNumber() >= 3;
@@ -51,5 +60,5 @@ public class ImageModerationService {
             e.printStackTrace();
             return true;
         }
-    }
+        }
 }
