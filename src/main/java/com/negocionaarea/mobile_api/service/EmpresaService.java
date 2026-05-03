@@ -6,6 +6,7 @@ import com.negocionaarea.mobile_api.model.EnderecoModel;
 import com.negocionaarea.mobile_api.model.LocalizacaoModel;
 import com.negocionaarea.mobile_api.repository.EmpresaRepository;
 import org.apache.coyote.Response;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -79,16 +80,6 @@ public class EmpresaService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Endereço é obrigatorio");
         }
 
-        EmpresaModel empresa = new EmpresaModel();
-        // ACRESCENTANDO AS VALIDAÇÕES:
-        if (empresaRepository.existsByCnpj(dto.getCnpj())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este CNPJ já está sendo usado!");
-        }
-
-        if (empresaRepository.existsByEmail(dto.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Este Email já está sendo usado!");
-        }
-
         if (dto.getPercentualCupomAniversario() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "percentual do cupom é obrigatório");
         }
@@ -99,6 +90,18 @@ public class EmpresaService {
 
         // validar senha
         validarSenha(dto.getSenha());
+
+        if(empresaRepository.existsByEmail(dto.getEmail().trim().toLowerCase())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
+        }
+
+
+        if(empresaRepository.existsByCnpj(dto.getCnpj().replaceAll("[^0-9]", ""))){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CNPJ já cadastrado");
+        }
+
+        EmpresaModel empresa = new EmpresaModel();
+
         //Transferindo os dados
         empresa.setNome(dto.getNome());
         empresa.setCnpj(dto.getCnpj());
@@ -122,12 +125,26 @@ public class EmpresaService {
 
         //inserindo a latitude e longitude
         String enderecoFormatado = localizacaoService.montarEndereco(empresa.getEndereco());
-        LocalizacaoModel localizacao = localizacaoService.buscarCoordenadas(enderecoFormatado);
 
-        empresa.setLocalizacao(localizacao);
+        try {
+            LocalizacaoModel localizacao = localizacaoService.buscarCoordenadas(enderecoFormatado);
+            empresa.setLocalizacao(localizacao);
+        } catch (Exception e) {
+            empresa.setLocalizacao(null);
+        }
 
-        //salvando
-        empresa = empresaRepository.save(empresa);
+
+        try {
+            empresa = empresaRepository.save(empresa);
+        }catch (DataIntegrityViolationException e){
+            String msg  = e.getMostSpecificCause().getMessage();
+            if(msg.contains("email")){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
+            } else if(msg.contains("cnpj")){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CNPJ já cadastrado");
+            }
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados duplicados");
+        }
 
         return toResponse(empresa);
     }
