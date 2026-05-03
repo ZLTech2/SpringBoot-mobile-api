@@ -48,8 +48,7 @@ public class ImageModerationService {
             }
 
         } catch (Exception e) {
-            System.out.println("Erro na moderação de imagem: " + e.getMessage());
-            // se der erro na API, deixa passar para não bloquear o upload
+            e.printStackTrace();
             return true;
         }
     }
