@@ -26,12 +26,14 @@ public class EmpresaService {
     private final PasswordEncoder passwordEncoder;
     private final LocalizacaoService localizacaoService;
     private final FileStorageService fileStorageService;
+    private ImageModerationService imageModerationService;
 
-    public EmpresaService(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder, LocalizacaoService localizacaoService, FileStorageService fileStorageService) {
+    public EmpresaService(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder, LocalizacaoService localizacaoService, FileStorageService fileStorageService, ImageModerationService imageModerationService) {
         this.empresaRepository = empresaRepository;
         this.passwordEncoder = passwordEncoder;
         this.localizacaoService = localizacaoService;
         this.fileStorageService = fileStorageService;
+        this.imageModerationService = imageModerationService;
     }
 
     private EmpresaResponse toResponse(EmpresaModel empresa) {
@@ -192,6 +194,18 @@ public class EmpresaService {
     public EmpresaResponse uploadLogo(MultipartFile logo, String email) {
         EmpresaModel empresa = empresaRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada"));
+
+        try{
+            if (!imageModerationService.imagemEhApropriada(logo.getBytes())){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Imagem rejeitada: conteúdo inapropriado detectado"
+                );
+            }
+        }catch (ResponseStatusException e){
+            throw e;
+        }catch(Exception e){
+            System.out.println("Erro ao verificar imagem: "+ e.getMessage());
+        }
+
 
         var stored = fileStorageService.storeEmpresaLogo(empresa.getId(), logo);
         empresa.setLogoUrl(stored.publicPath());

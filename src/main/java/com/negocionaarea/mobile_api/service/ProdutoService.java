@@ -7,6 +7,7 @@ import com.negocionaarea.mobile_api.model.EmpresaModel;
 import com.negocionaarea.mobile_api.model.ProdutoModel;
 import com.negocionaarea.mobile_api.repository.EmpresaRepository;
 import com.negocionaarea.mobile_api.repository.ProdutoRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,12 +23,14 @@ public class ProdutoService {
     private final ProdutoRepository produtoRepository;
     private final FileStorageService fileStorageService;
     private final PreferenciaNotificacaoService preferenciaNotificacao;
+    private ImageModerationService imageModerationService;
 
-    public ProdutoService(EmpresaRepository empresaRepository, ProdutoRepository produtoRepository, FileStorageService fileStorageService, PreferenciaNotificacaoService preferenciaNotificacao) {
+    public ProdutoService(EmpresaRepository empresaRepository, ProdutoRepository produtoRepository, FileStorageService fileStorageService, PreferenciaNotificacaoService preferenciaNotificacao, ImageModerationService imageModerationService) {
         this.empresaRepository = empresaRepository;
         this.produtoRepository = produtoRepository;
         this.fileStorageService = fileStorageService;
         this.preferenciaNotificacao = preferenciaNotificacao;
+        this.imageModerationService = imageModerationService;
     }
 
     public ProdutoResponse create(ProdutoCreateRequest request, String empresaEmail) {
@@ -143,6 +146,17 @@ public class ProdutoService {
 
         if (produto.getEmpresa() == null || !produto.getEmpresa().getId().equals(empresa.getId())) {
             throw new ResponseStatusException(FORBIDDEN, "Voce nao pode alterar produtos de outra empresa");
+        }
+
+        try{
+            if (!imageModerationService.imagemEhApropriada(imagem.getBytes())){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Imagem rejeitada: conteúdo inapropriado detectado"
+                );
+            }
+        }catch (ResponseStatusException e){
+            throw e;
+        }catch(Exception e){
+            System.out.println("Erro ao verificar imagem: "+ e.getMessage());
         }
 
         String oldPublicPath = produto.getImagem();
