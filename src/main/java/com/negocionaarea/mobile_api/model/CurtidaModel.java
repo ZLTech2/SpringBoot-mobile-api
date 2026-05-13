@@ -20,14 +20,14 @@ public class CurtidaModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idCurtida;
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false) //updatetable deixa fazer o insert mas depois o valor nunca mais se altera
-    private LocalDateTime dataCurtida;
+
+    @Column(nullable = false)
+    private LocalDateTime dataHora = LocalDateTime.now();
 
     // Relação da curtida com a entidade produto
     @ManyToOne
     @JoinColumn(name = "id_produto")
-    private ProdutoModel post;
+    private ProdutoModel produto;
 
     // Relação da curtida com a entidade cliente
     @ManyToOne
