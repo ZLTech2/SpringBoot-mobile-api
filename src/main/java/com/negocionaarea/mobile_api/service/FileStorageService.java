@@ -80,6 +80,38 @@ public class FileStorageService {
         }
     }
 
+    public StoredFile storeEmpresaLogo(UUID empresaId, MultipartFile logo) {
+        if (logo == null || logo.isEmpty()) {
+            throw new ResponseStatusException(BAD_REQUEST, "Arquivo 'logo' e obrigatorio");
+        }
+
+        String contentType = logo.getContentType();
+        if (contentType == null || !contentType.toLowerCase(Locale.ROOT).startsWith("image/")) {
+            throw new ResponseStatusException(BAD_REQUEST, "Arquivo enviado não é uma imagem");
+        }
+
+        String originalName = StringUtils.cleanPath(logo.getOriginalFilename() == null ? "" : logo.getOriginalFilename());
+        String ext = extensionFrom(contentType, originalName);
+        String fileName = UUID.randomUUID() + ext;
+
+        Path empresaDir = rootDir.resolve("empresas").resolve(empresaId.toString()).normalize();
+        Path target = empresaDir.resolve(fileName).normalize();
+
+        if (!target.startsWith(empresaDir)) {
+            throw new ResponseStatusException(BAD_REQUEST, "Nome de arquivo inválido");
+        }
+
+        try {
+            Files.createDirectories(empresaDir);
+            Files.copy(logo.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new ResponseStatusException(INTERNAL_SERVER_ERROR, "Falha ao salvar logo", e);
+        }
+
+        String publicPath = "/uploads/empresas/" + empresaId + "/" + fileName;
+        return new StoredFile(publicPath, contentType);
+    }
+
     private static String extensionFrom(String contentType, String originalName) {
 
         String ext = switch (contentType.toLowerCase(Locale.ROOT)) {

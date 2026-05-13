@@ -13,7 +13,6 @@ public class ClienteResponse {
     private UUID id;
     private String nome;
     private String email;
-    private String urlPerfil;
     private String telefone;
     private Instant createdAt;
 }

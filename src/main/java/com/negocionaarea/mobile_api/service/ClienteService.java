@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.negocionaarea.mobile_api.model.LocalizacaoModel;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -48,20 +49,34 @@ public class ClienteService {
         if (dto.getTelefone() == null || dto.getTelefone().trim().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "telefone e obrigatorio");
         }
-        if (dto.getUrlPerfil() == null || dto.getUrlPerfil().trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "urlPerfil e obrigatorio");
+        if (dto.getDataNascimento() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "data de nascimento é obrigatória");
+        }
+        if (dto.getEndereco() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "endereco é obrigatorio");
+        }
+
+        // validar senha
+        validarSenha(dto.getSenha());
+        String emailNormalizado = dto.getEmail().trim().toLowerCase();
+
+        // validar email
+        if(repository.existsByEmail(emailNormalizado)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
         }
 
         ClienteModel cliente = new ClienteModel();
 
         cliente.setNome(dto.getNome());
-        cliente.setEmail(dto.getEmail().trim().toLowerCase());
+        cliente.setEmail(emailNormalizado);
         cliente.setSenha(passwordEncoder.encode(dto.getSenha()));
-        cliente.setUrlPerfil(dto.getUrlPerfil());
-        cliente.setTelefone(dto.getTelefone());
+        cliente.setTelefone(dto.getTelefone().trim());
         cliente.setRole(Role.CUSTOMER);
+        cliente.setDataNascimento(dto.getDataNascimento());
+
 
         EnderecoModel endereco = new EnderecoModel();
+
         endereco.setRua(dto.getEndereco().getRua());
         endereco.setNumero(dto.getEndereco().getNumero());
         endereco.setBairro(dto.getEndereco().getBairro());
@@ -72,24 +87,28 @@ public class ClienteService {
         cliente.setEndereco(endereco);
         //inserindo a latitude e longitude
         String enderecoFormatado = localizacaoService.montarEndereco(cliente.getEndereco());
-        LocalizacaoModel localizacao = localizacaoService.buscarCoordenadas(enderecoFormatado);
 
-        cliente.setLocalizacao(localizacao);
+        try {
+            LocalizacaoModel localizacao = localizacaoService.buscarCoordenadas(enderecoFormatado);
+            cliente.setLocalizacao(localizacao);
+        }catch (Exception e){
+            cliente.setLocalizacao(null);
+        }
 
-
-
-        cliente = repository.save(cliente);
+        try{
+            cliente = repository.save(cliente);
+        }catch(DataIntegrityViolationException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
+        }
 
         ClienteResponse response = new ClienteResponse();
         response.setId(cliente.getId());
         response.setNome(cliente.getNome());
         response.setEmail(cliente.getEmail());
-        response.setUrlPerfil(cliente.getUrlPerfil());
         response.setTelefone(cliente.getTelefone());
 
         return response;
     }
-
 
     public List<ClienteResponse> listar() {
         return repository.findAll().stream().map(cliente -> {
@@ -98,11 +117,36 @@ public class ClienteService {
             response.setId(cliente.getId());
             response.setNome(cliente.getNome());
             response.setEmail(cliente.getEmail());
-            response.setUrlPerfil(cliente.getUrlPerfil());
             response.setTelefone(cliente.getTelefone());
 
             return response;
 
         }).collect(Collectors.toList());
     }
+
+    public ClienteResponse getMe(String email){
+        ClienteModel cliente = repository.findByEmail(email)
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
+        ClienteResponse response = new ClienteResponse();
+        response.setId(cliente.getId());
+        response.setNome(cliente.getNome());
+        response.setEmail(cliente.getEmail());
+        response.setTelefone(cliente.getTelefone());
+        return response;
+    }
+
+    private void validarSenha(String senha) {
+        if (senha == null || senha.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha é obrigatória");
+        }
+        String regex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,}$";
+
+        if (!senha.matches(regex)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "A senha deve ter no mínimo 8 caracteres, 1 letra maiúscula, 1 número e 1 caractere especial"
+            );
+        }
+    }
+
 }

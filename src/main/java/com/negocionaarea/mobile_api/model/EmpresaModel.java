@@ -46,6 +46,12 @@ public class EmpresaModel {
     @Column(nullable = false, length = 100)
     private String senha; //
 
+    @Column(length = 1024)
+    private String logoUrl;
+
+    @Column(nullable = false)
+    private Integer percentualCupomAniversario;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

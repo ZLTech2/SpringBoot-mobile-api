@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,10 +25,13 @@ public class ClienteModel {
     private String nome;
     @Column(nullable = false, length = 50)
     private String email;
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, unique = true, length = 100)
     private String senha;
-    @Column(nullable = false, length = 500)
+    @Column(nullable = true, length = 500)
     private String urlPerfil;
+
+    @Column(nullable = false)
+    private LocalDate dataNascimento;
 
     @Enumerated(EnumType.STRING)
     private Role role;

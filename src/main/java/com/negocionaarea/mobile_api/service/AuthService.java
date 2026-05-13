@@ -26,6 +26,7 @@ public class AuthService {
     private final EmpresaRepository empresaRepository;
     private final ClienteRepository clienteRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CupomService cupomService;
     private final JwtEncoder jwtEncoder;
     private final String issuer;
     private final long ttlSeconds;
@@ -33,6 +34,7 @@ public class AuthService {
     public AuthService(
             EmpresaRepository empresaRepository,
             ClienteRepository clienteRepository,
+            CupomService cupomService,
             PasswordEncoder passwordEncoder,
             JwtEncoder jwtEncoder,
             @Value("${app.jwt.issuer:mobile-api}") String issuer,
@@ -40,6 +42,7 @@ public class AuthService {
     ) {
         this.empresaRepository = empresaRepository;
         this.clienteRepository = clienteRepository;
+        this.cupomService = cupomService;
         this.passwordEncoder = passwordEncoder;
         this.jwtEncoder = jwtEncoder;
         this.issuer = issuer;
@@ -128,6 +131,11 @@ public class AuthService {
                     .orElseThrow(() -> new IllegalArgumentException("Credenciais invalidas"));
             if (!passwordEncoder.matches(senhaRaw, cliente.getSenha())) {
                 throw new IllegalArgumentException("Credenciais invalidas");
+            }
+            try {
+                cupomService.gerarCupomSeAniversario(cliente);
+            } catch (Exception e) {
+                System.out.println("Erro ao gerar cupom: " + e.getMessage());
             }
             roles = List.of("ROLE_" + Role.CUSTOMER.name());
         } else {

@@ -18,6 +18,9 @@ public class EmpresaResponse {
     private String telefone;
     private String email;
     private String descricao;
+    private String logoUrl;
+    private Integer percentualCupomAniversario;
     private EnderecoResponse endereco;
-
+    private Double latitude;
+    private Double longitude;
 }

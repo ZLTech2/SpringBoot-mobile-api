@@ -18,8 +18,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-
-import javax.swing.*;
 import java.util.List;
 
 @Service
@@ -56,10 +54,12 @@ public class PreferenciaNotificacaoService {
     }
 
     public PreferenciaNotificacaoModel salvar (PreferenciaNotificacaoRequest request, String email){
-        ClienteModel cliente = clienteRepository.findById(request.getClienteId())
+        ClienteModel cliente = clienteRepository.findByEmail(email)
                 .orElseThrow(()-> new UsernameNotFoundException("Cliente não encontrado"));
 
-        PreferenciaNotificacaoModel pref = new PreferenciaNotificacaoModel();
+        PreferenciaNotificacaoModel pref = preferenciaNotificacaoRepository
+                .findByCliente_Id(cliente.getId())
+                .orElse(new PreferenciaNotificacaoModel());;
 
         pref.setCliente(cliente);
         pref.setRaioMaximoKm(request.getRaioMaximoKm());

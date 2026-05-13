@@ -4,6 +4,7 @@ import com.negocionaarea.mobile_api.dto.ProdutoCreateRequest;
 import com.negocionaarea.mobile_api.dto.ProdutoResponse;
 import com.negocionaarea.mobile_api.dto.ProdutoUpdateRequest;
 import com.negocionaarea.mobile_api.service.ProdutoService;
+import org.apache.coyote.Response;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +34,18 @@ public class ProdutoController {
     public ResponseEntity<List<ProdutoResponse>> getAll() {
         return ResponseEntity.ok(produtoService.getAll());
     }
+
+    @GetMapping("/minhaEmpresa")
+    @PreAuthorize("hasRole('ENTERPRISE')")
+    public ResponseEntity<List<ProdutoResponse>> getMeusProdutos(JwtAuthenticationToken auth){
+        return ResponseEntity.ok(produtoService.getProdutosByEmpresa(auth.getToken().getSubject()));
+    }
+
+    @GetMapping("/empresa/{empresaId}")
+    public ResponseEntity<List<ProdutoResponse>> getProdutosPorEmpresa(@PathVariable UUID empresaId) {
+        return ResponseEntity.ok(produtoService.getProdutosPorEmpresaId(empresaId));
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<ProdutoResponse> getById(@PathVariable UUID id) {
