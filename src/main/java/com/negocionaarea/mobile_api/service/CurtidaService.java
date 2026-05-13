@@ -28,9 +28,12 @@ public class CurtidaService {
     }
 
     @Transactional
-    public String alternarCurtida (UUID clienteId, UUID produtoId){
+    public String alternarCurtida (String email, UUID produtoId){
 
-        Optional<CurtidaModel> curtidaExistente = curtidaRepository.findByClienteIdAndProdutoId(clienteId, produtoId);
+        ClienteModel cliente = clienteRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
+        Optional<CurtidaModel> curtidaExistente = curtidaRepository.findByClienteIdAndProdutoId(cliente.getId(), produtoId);
 
         if(curtidaExistente.isPresent()){
             curtidaRepository.delete(curtidaExistente.get());
@@ -39,9 +42,6 @@ public class CurtidaService {
 
             return "Curtida removida";
         }else{
-            ClienteModel cliente = clienteRepository.findById(clienteId)
-                    .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-
             ProdutoModel produto = produtoRepository.findById(produtoId)
                     .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
@@ -57,11 +57,13 @@ public class CurtidaService {
         }
     }
 
-    public List<ProdutoModel> listarPostsCurtidos(UUID clienteId){
-        return curtidaRepository.findAllByClienteIdOrderByDataHoraDesc(clienteId)
+    public List<ProdutoModel> listarPostsCurtidos(String email){
+        ClienteModel cliente = clienteRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
+        return curtidaRepository.findAllByClienteIdOrderByDataHoraDesc(cliente.getId())
                 .stream()
                 .map(CurtidaModel::getProduto)
-                .distinct()
                 .collect(Collectors.toList());
     }
 
