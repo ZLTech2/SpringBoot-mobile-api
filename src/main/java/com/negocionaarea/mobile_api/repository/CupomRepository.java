@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface CupomRepository extends JpaRepository<CupomModel, UUID> {
 
     Optional<CupomModel> findByCliente_AndUtilizadoFalseAndAnoGerado(ClienteModel cliente, Integer anoGerado);
+
+    boolean existsByCliente_CpfAndTipoAndAnoGerado(String cpf, String tipo, Integer anoGerado);
 }

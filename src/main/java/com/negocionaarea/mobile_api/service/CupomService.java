@@ -37,8 +37,9 @@ public class CupomService {
         if (cliente.getDataNascimento().getMonth() == hoje.getMonth()
                 && cliente.getDataNascimento().getDayOfMonth() == hoje.getDayOfMonth()) {
 
-            var existente = cupomRepository.findByCliente_AndUtilizadoFalseAndAnoGerado(cliente, hoje.getYear());
-            if (existente.isPresent()) return;
+            boolean jaTemCupom = cupomRepository.existsByCliente_CpfAndTipoAndAnoGerado(cliente.getCpf(), "ANIVERSARIO", hoje.getYear());
+            if(jaTemCupom) return;
+
 
             CupomModel cupom = new CupomModel();
             cupom.setCliente(cliente);
