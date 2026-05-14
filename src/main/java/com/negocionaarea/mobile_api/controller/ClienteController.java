@@ -23,7 +23,7 @@ public class ClienteController {
     @Autowired
     private ClienteService service;
 
-    @PostMapping("/cadastrar")
+    @PostMapping
     public ClienteResponse salvar(@RequestBody ClienteRequest dto) {
         return service.salvar(dto);
     }

@@ -13,6 +13,7 @@ public class ClienteRequest {
     private String email;
     private String senha;
     private String telefone;
+    private String cpf;
     private EnderecoRequest endereco;
     private LocalDate dataNascimento;
 
