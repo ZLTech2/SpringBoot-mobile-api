@@ -35,7 +35,7 @@ public class ProdutoModel {
     private String imagem;
     private boolean isPromocao = false;
     @Column
-    private int contadorCurtidas =0;
+    private Integer contadorCurtidas =0;
 
     // Relação do produto com a entidade empresa
     @ManyToOne
