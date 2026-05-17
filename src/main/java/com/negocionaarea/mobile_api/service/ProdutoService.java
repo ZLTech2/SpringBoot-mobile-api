@@ -201,7 +201,8 @@ public class ProdutoService {
                     produto.getNome(),
                     produto.getPrecoProduto(),
                     precoPromocional,
-                    request.getPorcentagemDesconto()
+                    request.getPorcentagemDesconto(),
+                    produto.getImagem()
             );
             produto.setUrlBannerPromocional(urlBanner);
         }
