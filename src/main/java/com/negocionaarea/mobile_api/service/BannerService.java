@@ -23,7 +23,7 @@ public class BannerService {
 
             String body = String.format("""
                 {
-                    "model": "dall-e-3",
+                    "model": "gpt-image-1",
                     "prompt": "%s",
                     "n": 1,
                     "size": "1024x1024"
