@@ -34,7 +34,7 @@ public class CurtidaService {
         ClienteModel cliente = clienteRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
-        Optional<CurtidaModel> curtidaExistente = curtidaRepository.findByClienteIdAndProdutoIdProduto(cliente.getId(), produtoId);
+        Optional<CurtidaModel> curtidaExistente = curtidaRepository.findFirstByClienteIdAndProdutoIdProduto(cliente.getId(), produtoId);
 
         if(curtidaExistente.isPresent()){
             curtidaRepository.delete(curtidaExistente.get());
