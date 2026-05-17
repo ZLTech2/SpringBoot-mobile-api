@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +37,13 @@ public class ProdutoModel {
     private boolean isPromocao = false;
     @Column
     private Integer contadorCurtidas =0;
+
+    private Double precoPromocional;
+    private Double porcentagemDesconto;
+    private LocalDate dataFinalPromocao;
+
+    @Column(length = 1024)
+    private String urlBannerPromocional;
 
     // Relação do produto com a entidade empresa
     @ManyToOne

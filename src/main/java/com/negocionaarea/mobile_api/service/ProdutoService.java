@@ -3,10 +3,12 @@ package com.negocionaarea.mobile_api.service;
 import com.negocionaarea.mobile_api.dto.ProdutoCreateRequest;
 import com.negocionaarea.mobile_api.dto.ProdutoResponse;
 import com.negocionaarea.mobile_api.dto.ProdutoUpdateRequest;
+import com.negocionaarea.mobile_api.dto.PromocaoRequest;
 import com.negocionaarea.mobile_api.model.EmpresaModel;
 import com.negocionaarea.mobile_api.model.ProdutoModel;
 import com.negocionaarea.mobile_api.repository.EmpresaRepository;
 import com.negocionaarea.mobile_api.repository.ProdutoRepository;
+import org.springframework.boot.Banner;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,13 +26,16 @@ public class ProdutoService {
     private final FileStorageService fileStorageService;
     private final PreferenciaNotificacaoService preferenciaNotificacao;
     private ImageModerationService imageModerationService;
+    private final BannerService bannerService;
 
-    public ProdutoService(EmpresaRepository empresaRepository, ProdutoRepository produtoRepository, FileStorageService fileStorageService, PreferenciaNotificacaoService preferenciaNotificacao, ImageModerationService imageModerationService) {
+    public ProdutoService(EmpresaRepository empresaRepository, ProdutoRepository produtoRepository, FileStorageService fileStorageService,
+                          PreferenciaNotificacaoService preferenciaNotificacao, ImageModerationService imageModerationService, BannerService bannerService) {
         this.empresaRepository = empresaRepository;
         this.produtoRepository = produtoRepository;
         this.fileStorageService = fileStorageService;
         this.preferenciaNotificacao = preferenciaNotificacao;
         this.imageModerationService = imageModerationService;
+        this.bannerService = bannerService;
     }
 
     public ProdutoResponse create(ProdutoCreateRequest request, String empresaEmail) {
@@ -173,6 +178,55 @@ public class ProdutoService {
         return toResponse(saved);
     }
 
+    public ProdutoResponse adicionarPromocao(UUID id, PromocaoRequest request, String empresaEmail){
+        ProdutoModel produto = produtoRepository.findById(id)
+                .orElseThrow(()->new ResponseStatusException(NOT_FOUND, "Produto não encontrado"));
+        EmpresaModel empresa = empresaRepository.findByEmail(empresaEmail)
+                .orElseThrow(()->new ResponseStatusException(FORBIDDEN, "Empresa não encontrada"));
+
+        if(!produto.getEmpresa().getId().equals(empresa.getId())){
+            throw new ResponseStatusException(FORBIDDEN, "Você não pode alterar produtos de outra empresa");
+        }
+
+        Double precoPromocional = produto.getPrecoProduto()
+                -(produto.getPrecoProduto()*request.getPorcentagemDesconto() / 100);
+
+        produto.setPromocao(true);
+        produto.setPrecoPromocional(precoPromocional);
+        produto.setPorcentagemDesconto(request.getPorcentagemDesconto());
+        produto.setDataFinalPromocao(request.getDataFinalPromocao());
+
+        if(Boolean.TRUE.equals(request.getGerarBanner())){
+            String urlBanner = bannerService.gerarBanner(
+                    produto.getNome(),
+                    produto.getPrecoProduto(),
+                    precoPromocional,
+                    request.getPorcentagemDesconto()
+            );
+            produto.setUrlBannerPromocional(urlBanner);
+        }
+        return toResponse(produtoRepository.save(produto));
+    }
+
+    public ProdutoResponse removerPromocao(UUID id, String empresaEmail){
+        ProdutoModel produto = produtoRepository.findById(id)
+                .orElseThrow(()->new ResponseStatusException(NOT_FOUND, "Produto não encontrado"));
+        EmpresaModel empresa = empresaRepository.findByEmail(empresaEmail)
+                .orElseThrow(()->new ResponseStatusException(FORBIDDEN, "Empresa não encontrada"));
+
+        if(!produto.getEmpresa().getId().equals(empresa.getId())){
+            throw new ResponseStatusException(FORBIDDEN, "Você não pode alterar produtos de outra empresa");
+        }
+
+        produto.setPromocao(true);
+        produto.setPrecoPromocional(null);
+        produto.setPorcentagemDesconto(null);
+        produto.setDataFinalPromocao(null);
+        produto.setUrlBannerPromocional(null);
+
+        return toResponse(produtoRepository.save(produto));
+    }
+
     private static ProdutoResponse toResponse(ProdutoModel produto) {
         return new ProdutoResponse(
                 produto.getIdProduto(),
@@ -182,7 +236,12 @@ public class ProdutoService {
                 produto.getDataPostagem(),
                 produto.getImagem(),
                 produto.getEmpresa() == null ? null : produto.getEmpresa().getId(),
-                produto.getEmpresa() == null ? null : produto.getEmpresa().getNome()
+                produto.getEmpresa() == null ? null : produto.getEmpresa().getNome(),
+                produto.isPromocao(),
+                produto.getPrecoPromocional(),
+                produto.getPorcentagemDesconto(),
+                produto.getDataFinalPromocao(),
+                produto.getUrlBannerPromocional()
         );
     }
 }

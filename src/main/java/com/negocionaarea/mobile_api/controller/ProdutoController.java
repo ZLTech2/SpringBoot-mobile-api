@@ -4,6 +4,7 @@ import com.negocionaarea.mobile_api.dto.ProdutoCreateRequest;
 import com.negocionaarea.mobile_api.dto.ProdutoResponse;
 import com.negocionaarea.mobile_api.dto.ProdutoUpdateRequest;
 import com.negocionaarea.mobile_api.service.ProdutoService;
+import com.negocionaarea.mobile_api.dto.PromocaoRequest;
 import org.apache.coyote.Response;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -77,5 +78,22 @@ public class ProdutoController {
                                                        @RequestParam("imagem") MultipartFile imagem,
                                                        JwtAuthenticationToken auth) {
         return ResponseEntity.ok(produtoService.uploadImagem(id, imagem, auth.getToken().getSubject()));
+    }
+
+    @PutMapping("/{id}/promocao")
+    @PreAuthorize("hasRole('ENTERPRISE')")
+    public ResponseEntity<ProdutoResponse> adicionarPromocao(
+            @PathVariable UUID id,
+            @RequestBody PromocaoRequest request,
+            JwtAuthenticationToken auth){
+        return ResponseEntity.ok(produtoService.adicionarPromocao(id, request, auth.getToken().getSubject()));
+    }
+
+    @DeleteMapping("/{id}/promocao")
+    @PreAuthorize("hasRole('ENTERPRISE')")
+    public ResponseEntity<ProdutoResponse> removerPromocao(
+            @PathVariable UUID id,
+            JwtAuthenticationToken auth){
+        return ResponseEntity.ok(produtoService.removerPromocao(id, auth.getToken().getSubject()));
     }
 }
