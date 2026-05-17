@@ -1,0 +1,71 @@
+package com.negocionaarea.mobile_api.service;
+
+import com.negocionaarea.mobile_api.model.ClienteModel;
+import com.negocionaarea.mobile_api.model.CurtidaModel;
+import com.negocionaarea.mobile_api.model.ProdutoModel;
+import com.negocionaarea.mobile_api.repository.ClienteRepository;
+import com.negocionaarea.mobile_api.repository.CurtidaRepository;
+import com.negocionaarea.mobile_api.repository.ProdutoRepository;
+import lombok.Setter;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Service
+public class CurtidaService {
+    private final CurtidaRepository curtidaRepository;
+    private final ProdutoRepository produtoRepository;
+    private final ClienteRepository clienteRepository;
+
+    public CurtidaService(CurtidaRepository curtidaRepository, ProdutoRepository produtoRepository, ClienteRepository clienteRepository) {
+        this.curtidaRepository = curtidaRepository;
+        this.produtoRepository = produtoRepository;
+        this.clienteRepository = clienteRepository;
+    }
+
+    @Transactional
+    public String alternarCurtida (String email, UUID produtoId){
+
+        ClienteModel cliente = clienteRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
+        Optional<CurtidaModel> curtidaExistente = curtidaRepository.findByClienteIdAndProdutoIdProduto(cliente.getId(), produtoId);
+
+        if(curtidaExistente.isPresent()){
+            curtidaRepository.delete(curtidaExistente.get());
+            //diminui o contator
+            produtoRepository.decrementarCurtida(produtoId);
+
+            return "Curtida removida";
+        }else{
+            ProdutoModel produto = produtoRepository.findById(produtoId)
+                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+            CurtidaModel curtida = new CurtidaModel();
+            curtida.setCliente(cliente);
+            curtida.setProduto(produto);
+
+            curtidaRepository.save(curtida);
+            produtoRepository.incrementarCurtida(produtoId);
+
+            return "Produto curtido com sucesso";
+
+        }
+    }
+
+    public List<ProdutoModel> listarPostsCurtidos(String email){
+        ClienteModel cliente = clienteRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
+        return curtidaRepository.findAllByClienteIdOrderByDataHoraDesc(cliente.getId())
+                .stream()
+                .map(CurtidaModel::getProduto)
+                .collect(Collectors.toList());
+    }
+
+
+}
