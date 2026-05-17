@@ -25,16 +25,19 @@ public class ProdutoService {
     private final ProdutoRepository produtoRepository;
     private final FileStorageService fileStorageService;
     private final PreferenciaNotificacaoService preferenciaNotificacao;
+    private final CloudinaryService cloudinaryService;
     private ImageModerationService imageModerationService;
     private final BannerService bannerService;
 
     public ProdutoService(EmpresaRepository empresaRepository, ProdutoRepository produtoRepository, FileStorageService fileStorageService,
-                          PreferenciaNotificacaoService preferenciaNotificacao, ImageModerationService imageModerationService, BannerService bannerService) {
+                          PreferenciaNotificacaoService preferenciaNotificacao, ImageModerationService imageModerationService, BannerService bannerService,
+                          CloudinaryService cloudinaryService) {
         this.empresaRepository = empresaRepository;
         this.produtoRepository = produtoRepository;
         this.fileStorageService = fileStorageService;
         this.preferenciaNotificacao = preferenciaNotificacao;
         this.imageModerationService = imageModerationService;
+        this.cloudinaryService = cloudinaryService;
         this.bannerService = bannerService;
     }
 
@@ -164,16 +167,11 @@ public class ProdutoService {
             System.out.println("Erro ao verificar imagem: "+ e.getMessage());
         }
 
-        String oldPublicPath = produto.getImagem();
-        var stored = fileStorageService.storeProdutoImagem(produto.getIdProduto(), imagem);
+        String cloudinaryUrl = cloudinaryService.upload(imagem, "produtos");
 
-        produto.setImagem(stored.publicPath());
+        produto.setImagem(cloudinaryUrl);
         ProdutoModel saved = produtoRepository.save(produto);
 
-        // Best-effort cleanup if we're replacing a previous local upload
-        if (oldPublicPath != null && !oldPublicPath.equals(saved.getImagem())) {
-            fileStorageService.tryDeleteIfUnderUploads(oldPublicPath);
-        }
 
         return toResponse(saved);
     }
@@ -201,8 +199,7 @@ public class ProdutoService {
                     produto.getNome(),
                     produto.getPrecoProduto(),
                     precoPromocional,
-                    request.getPorcentagemDesconto(),
-                    produto.getImagem()
+                    request.getPorcentagemDesconto()
             );
             produto.setUrlBannerPromocional(urlBanner);
         }
