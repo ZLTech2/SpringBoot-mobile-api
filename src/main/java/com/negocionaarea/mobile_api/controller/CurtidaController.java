@@ -23,7 +23,7 @@ public class CurtidaController {
     @PostMapping("/produto/{produtoId}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<String>curtir(@PathVariable UUID produtoId, JwtAuthenticationToken auth){
-        System.out.println("=== DEBUG CURTIDA ===");
+        System.out.println("=== DEBUG CURTIDAs ===");
 
         // 1. Ver se auth chegou
         System.out.println("AUTH RECEBIDO: " + auth);
