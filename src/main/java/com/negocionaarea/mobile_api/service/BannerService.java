@@ -35,10 +35,13 @@ public class BannerService {
         try {
             // 1. Monta o prompt
             String prompt = String.format(
-                    "Create a professional e-commerce promotional banner for a product called '%s'. " +
-                            "Include a large bold red starburst badge in the top-right corner clearly showing '%.0f%% OFF' in large white bold text. " +
-                            "Also show 'de R$%.2f por R$%.2f' below the badge. " +
-                            "White clean background, modern style, high contrast badge that is impossible to miss.",
+                    "A promotional discount sticker badge, isolated on a pure white background, no shadows, no product photo, no extra elements. " +
+                            "The badge is a bold red starburst or sunburst shape (like a price tag explosion). " +
+                            "In the center, very large white bold text: '%.0f%%'. " +
+                            "Below it, smaller white bold text: 'OFF'. " +
+                            "Below that, even smaller white text: 'de R$%.2f por R$%.2f'. " +
+                            "Style: flat graphic, high contrast, e-commerce promo sticker, similar to Shopee or Mercado Livre discount badges. " +
+                            "The sticker must be centered, large, and fill most of the image. Pure white background only.",
                     nomeProduto, porcentagem, precoOriginal, precoPromocional
             );
 
