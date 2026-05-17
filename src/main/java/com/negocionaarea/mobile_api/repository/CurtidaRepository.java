@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CurtidaRepository extends JpaRepository<CurtidaModel, UUID> {
-    boolean existsByClienteIdAndProdutoIdProduto(UUID clienteId, UUID Idproduto);
+    boolean existsByClienteIdAndProdutoIdProduto(UUID clienteId, UUID idProduto);
     List<CurtidaModel> findAllByClienteIdOrderByDataHoraDesc(UUID clienteId);
-    Optional<CurtidaModel> findFirstByClienteIdAndProdutoIdProduto(UUID clienteId, UUID produtoId);
+    Optional<CurtidaModel> findFirstByClienteIdAndProdutoIdProduto(UUID clienteId, UUID idProduto);
 }
