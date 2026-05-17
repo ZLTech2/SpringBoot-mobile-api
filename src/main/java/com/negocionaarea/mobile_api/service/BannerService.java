@@ -59,6 +59,10 @@ public class BannerService {
             int b64End = openAiResponseBody.indexOf("\"", b64Start);
             String base64 = openAiResponseBody.substring(b64Start, b64End);
 
+            System.out.println(">>> BASE64 TAMANHO: " + base64.length());
+            System.out.println(">>> BASE64 INICIO: " + base64.substring(0, Math.min(50, base64.length())));
+            System.out.println(">>> BASE64 FIM: " + base64.substring(Math.max(0, base64.length() - 50)));
+
             // 3. Envia para o Cloudinary
 
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
