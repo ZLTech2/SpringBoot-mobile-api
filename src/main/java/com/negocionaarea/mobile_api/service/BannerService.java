@@ -1,5 +1,9 @@
 package com.negocionaarea.mobile_api.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -7,8 +11,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Map;
 
 @Service
 public class BannerService {
@@ -43,7 +47,6 @@ public class BannerService {
                 """, prompt);
 
             HttpClient client = HttpClient.newHttpClient();
-
             HttpRequest openAiRequest = HttpRequest.newBuilder()
                     .uri(URI.create("https://api.openai.com/v1/images/generations"))
                     .header("Content-Type", "application/json")
@@ -52,40 +55,27 @@ public class BannerService {
                     .build();
 
             HttpResponse<String> openAiResponse = client.send(openAiRequest, HttpResponse.BodyHandlers.ofString());
-            String openAiResponseBody = openAiResponse.body();
 
             // 2. Extrai o base64
-            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-            com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(openAiResponseBody);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(openAiResponse.body());
             String base64 = root.path("data").get(0).path("b64_json").asText();
+            byte[] imageBytes = Base64.getDecoder().decode(base64);
 
-            System.out.println(">>> BASE64 TAMANHO: " + base64.length());
-            System.out.println(">>> BASE64 INICIO: " + base64.substring(0, Math.min(50, base64.length())));
-            System.out.println(">>> BASE64 FIM: " + base64.substring(Math.max(0, base64.length() - 50)));
+            // 3. Envia para o Cloudinary via SDK
+            Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
+                    "cloud_name", cloudName,
+                    "api_key", cloudinaryApiKey,
+                    "api_secret", cloudinaryApiSecret
+            ));
 
-            // 3. Envia para o Cloudinary
+            Map uploadResult = cloudinary.uploader().upload(imageBytes, ObjectUtils.asMap(
+                    "folder", "banners"
+            ));
 
-            com.fasterxml.jackson.databind.node.ObjectNode cloudinaryJson = mapper.createObjectNode();
-            cloudinaryJson.put("file", "data:image/png;base64," + base64);
-            cloudinaryJson.put("upload_preset", "negocionaarea");
-            String cloudinaryBody = mapper.writeValueAsString(cloudinaryJson);
-
-            HttpRequest cloudinaryRequest = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.cloudinary.com/v1_1/" + cloudName + "/image/upload"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(cloudinaryBody))
-                    .build();
-
-            HttpResponse<String> cloudinaryResponse = client.send(cloudinaryRequest, HttpResponse.BodyHandlers.ofString());
-            String cloudinaryResponseBody = cloudinaryResponse.body();
-
-            System.out.println(">>> CLOUDINARY STATUS: " + cloudinaryResponse.statusCode());
-            System.out.println(">>> CLOUDINARY RESPOSTA: " + cloudinaryResponseBody);
-
-            // 4. Extrai a URL pública
-            int urlStart = cloudinaryResponseBody.indexOf("\"secure_url\":\"") + 14;
-            int urlEnd = cloudinaryResponseBody.indexOf("\"", urlStart);
-            return cloudinaryResponseBody.substring(urlStart, urlEnd);
+            String url = (String) uploadResult.get("secure_url");
+            System.out.println(">>> BANNER URL: " + url);
+            return url;
 
         } catch (Exception e) {
             System.out.println(">>> ERRO AO GERAR BANNER: " + e.getMessage());
