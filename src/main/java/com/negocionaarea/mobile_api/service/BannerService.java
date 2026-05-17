@@ -30,6 +30,8 @@ public class BannerService {
                 }
                 """, prompt);
 
+            System.out.println(">>> CHAMANDO OPENAI COM PROMPT: " + prompt);
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://api.openai.com/v1/images/generations"))
                     .header("Content-Type", "application/json")
@@ -40,6 +42,9 @@ public class BannerService {
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+            System.out.println(">>> STATUS OPENAI: " + response.statusCode());
+            System.out.println(">>> RESPOSTA OPENAI: " + response.body());
+
             // Extrai a URL da resposta JSON
             String responseBody = response.body();
             int urlStart = responseBody.indexOf("\"url\":\"") + 7;
@@ -47,7 +52,7 @@ public class BannerService {
             return responseBody.substring(urlStart, urlEnd);
 
         } catch (Exception e) {
-            System.out.println("Erro ao gerar banner: " + e.getMessage());
+            System.out.println(">>>ERRO AO GERAR BANNER: " + e.getMessage());
             return null;
         }
     }
