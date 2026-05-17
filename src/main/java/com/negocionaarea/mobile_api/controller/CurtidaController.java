@@ -23,11 +23,23 @@ public class CurtidaController {
     @PostMapping("/produto/{produtoId}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<String>curtir(@PathVariable UUID produtoId, JwtAuthenticationToken auth){
-        String email = auth.getToken().getSubject();
+        System.out.println("=== DEBUG CURTIDAs ===");
 
-        String mensage = curtidaService.alternarCurtida(email, produtoId);
+        // 1. Ver se auth chegou
+        System.out.println("AUTH RECEBIDO: " + auth);
 
-        return ResponseEntity.ok(mensage);
+        // 2. Ver token bruto
+        System.out.println("TOKEN: " + (auth != null ? auth.getToken() : "NULL"));
+
+        // 3. Ver subject (email do usuário)
+        String email = auth != null ? auth.getToken().getSubject() : null;
+        System.out.println("EMAIL (SUBJECT): " + email);
+
+        System.out.println("PRODUTO ID: " + produtoId);
+
+        String mensagem = curtidaService.alternarCurtida(email, produtoId);
+
+        return ResponseEntity.ok(mensagem);
     }
 
     @GetMapping("/feed")
