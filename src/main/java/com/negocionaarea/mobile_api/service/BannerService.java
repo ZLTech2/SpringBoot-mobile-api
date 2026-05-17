@@ -60,7 +60,12 @@ public class BannerService {
             String base64 = openAiResponseBody.substring(b64Start, b64End);
 
             // 3. Envia para o Cloudinary
-            String cloudinaryBody = "{\"file\":\"data:image/png;base64," + base64 + "\",\"upload_preset\":\"negocionaarea\"}";
+
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            com.fasterxml.jackson.databind.node.ObjectNode cloudinaryJson = mapper.createObjectNode();
+            cloudinaryJson.put("file", "data:image/png;base64," + base64);
+            cloudinaryJson.put("upload_preset", "negocionaarea");
+            String cloudinaryBody = mapper.writeValueAsString(cloudinaryJson);
 
             HttpRequest cloudinaryRequest = HttpRequest.newBuilder()
                     .uri(URI.create("https://api.cloudinary.com/v1_1/" + cloudName + "/image/upload"))
