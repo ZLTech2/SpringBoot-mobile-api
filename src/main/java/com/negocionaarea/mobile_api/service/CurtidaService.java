@@ -1,5 +1,6 @@
 package com.negocionaarea.mobile_api.service;
 
+import com.negocionaarea.mobile_api.dto.ProdutoCurtidoDto;
 import com.negocionaarea.mobile_api.model.ClienteModel;
 import com.negocionaarea.mobile_api.model.CurtidaModel;
 import com.negocionaarea.mobile_api.model.ProdutoModel;
@@ -57,13 +58,24 @@ public class CurtidaService {
         }
     }
 
-    public List<ProdutoModel> listarPostsCurtidos(String email){
+    public List<ProdutoCurtidoDto> listarPostsCurtidos(String email){
         ClienteModel cliente = clienteRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
         return curtidaRepository.findAllByClienteIdOrderByDataHoraDesc(cliente.getId())
                 .stream()
-                .map(CurtidaModel::getProduto)
+                .map(curtida -> {
+                    ProdutoModel p = curtida.getProduto();
+
+                    return new ProdutoCurtidoDto(
+                            p.getIdProduto(),
+                            p.getNome(),
+                            p.getDescricaoProduto(),
+                            p.getImagem(),
+                            p.getPrecoProduto(),
+                            true
+                    );
+                })
                 .collect(Collectors.toList());
     }
 

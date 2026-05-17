@@ -1,5 +1,6 @@
 package com.negocionaarea.mobile_api.controller;
 
+import com.negocionaarea.mobile_api.dto.ProdutoCurtidoDto;
 import com.negocionaarea.mobile_api.model.ProdutoModel;
 import com.negocionaarea.mobile_api.service.CurtidaService;
 import org.springframework.http.ResponseEntity;
@@ -44,9 +45,11 @@ public class CurtidaController {
 
     @GetMapping("/feed")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<List<ProdutoModel>>feedCurtidasCliente(JwtAuthenticationToken auth){
+    public ResponseEntity<List<ProdutoCurtidoDto>>feedCurtidasCliente(JwtAuthenticationToken auth){
         String email = auth.getToken().getSubject();
 
-        return ResponseEntity.ok(curtidaService.listarPostsCurtidos(email));
+        List<ProdutoCurtidoDto> feed = curtidaService.listarPostsCurtidos(email);
+
+        return ResponseEntity.ok(feed);
     }
 }
