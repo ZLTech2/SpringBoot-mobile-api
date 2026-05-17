@@ -21,7 +21,7 @@ public class CurtidaModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idCurtida;
 
-    @Column(nullable = false, name="data_curtida")
+    @Column(nullable = false, name="data_hora")
     private LocalDateTime dataHora;
 
     // Relação da curtida com a entidade produto
