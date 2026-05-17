@@ -55,9 +55,9 @@ public class BannerService {
             String openAiResponseBody = openAiResponse.body();
 
             // 2. Extrai o base64
-            int b64Start = openAiResponseBody.indexOf("\"b64_json\":\"") + 12;
-            int b64End = openAiResponseBody.indexOf("\"", b64Start);
-            String base64 = openAiResponseBody.substring(b64Start, b64End);
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(openAiResponseBody);
+            String base64 = root.path("data").get(0).path("b64_json").asText();
 
             System.out.println(">>> BASE64 TAMANHO: " + base64.length());
             System.out.println(">>> BASE64 INICIO: " + base64.substring(0, Math.min(50, base64.length())));
@@ -65,7 +65,6 @@ public class BannerService {
 
             // 3. Envia para o Cloudinary
 
-            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
             com.fasterxml.jackson.databind.node.ObjectNode cloudinaryJson = mapper.createObjectNode();
             cloudinaryJson.put("file", "data:image/png;base64," + base64);
             cloudinaryJson.put("upload_preset", "negocionaarea");
