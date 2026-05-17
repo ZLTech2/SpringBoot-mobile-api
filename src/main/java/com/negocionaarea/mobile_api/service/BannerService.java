@@ -35,7 +35,8 @@ public class BannerService {
         try {
             // 1. Monta o prompt
             String prompt = String.format(
-                    "A promotional discount sticker badge, isolated on a pure white background, no shadows, no product photo, no extra elements. " +
+                    "Create a promotional badge for the product '%s'. " +
+                            "A promotional discount sticker badge, isolated on a pure white background, no shadows, no product photo, no extra elements. " +
                             "The badge is a bold red starburst or sunburst shape (like a price tag explosion). " +
                             "In the center, very large white bold text: '%.0f%%'. " +
                             "Below it, smaller white bold text: 'OFF'. " +
