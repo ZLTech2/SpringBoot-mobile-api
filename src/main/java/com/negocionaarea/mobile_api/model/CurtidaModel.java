@@ -22,7 +22,7 @@ public class CurtidaModel {
     private UUID idCurtida;
 
     @Column(nullable = false, name="data_curtida")
-    private LocalDateTime dataHora = LocalDateTime.now();
+    private LocalDateTime dataHora;
 
     // Relação da curtida com a entidade produto
     @ManyToOne
@@ -33,4 +33,9 @@ public class CurtidaModel {
     @ManyToOne
     @JoinColumn(name = "id_cliente")
     private ClienteModel cliente;
+
+    @PrePersist
+    public void prePersist() {
+        this.dataHora = LocalDateTime.now();
+    }
 }
