@@ -26,7 +26,8 @@ public class BannerService {
                     "model": "gpt-image-1",
                     "prompt": "%s",
                     "n": 1,
-                    "size": "1024x1024"
+                    "size": "1024x1024",
+                    "response_format": "url"
                 }
                 """, prompt);
 
