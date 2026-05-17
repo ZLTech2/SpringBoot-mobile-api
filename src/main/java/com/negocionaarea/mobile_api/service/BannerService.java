@@ -60,13 +60,11 @@ public class BannerService {
             String base64 = openAiResponseBody.substring(b64Start, b64End);
 
             // 3. Envia para o Cloudinary
-            String dataUri = "data:image/png;base64," + base64;
-            String cloudinaryBody = "file=" + URLEncoder.encode(dataUri, StandardCharsets.UTF_8)
-                    + "&upload_preset=negocionaarea";
+            String cloudinaryBody = "{\"file\":\"data:image/png;base64," + base64 + "\",\"upload_preset\":\"negocionaarea\"}";
 
             HttpRequest cloudinaryRequest = HttpRequest.newBuilder()
                     .uri(URI.create("https://api.cloudinary.com/v1_1/" + cloudName + "/image/upload"))
-                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(cloudinaryBody))
                     .build();
 
