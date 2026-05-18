@@ -192,7 +192,7 @@ public class ProdutoService {
         produto.setPromocao(true);
         produto.setPrecoPromocional(precoPromocional);
         produto.setPorcentagemDesconto(request.getPorcentagemDesconto());
-        produto.setDataFinalPromocao(request.getDataFinalPromocao());
+        produto.setDataFinalPromocao(request.getDataFinalPromocao().atTime(23,59,59));
 
         if(Boolean.TRUE.equals(request.getGerarBanner())){
             String urlBanner = bannerService.gerarBanner(
