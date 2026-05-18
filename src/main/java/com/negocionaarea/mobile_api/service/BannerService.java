@@ -35,25 +35,34 @@ public class BannerService {
         try {
             // 1. Monta o prompt
             String prompt = String.format(
-                    "Create a promotional badge for the product '%s'. " +
-                            "A promotional discount sticker badge, isolated on a pure white background, no shadows, no product photo, no extra elements. " +
-                            "The badge is a bold red starburst or sunburst shape (like a price tag explosion). " +
+                    "A promotional discount sticker badge for the product '%s'. " +
+                            "CRITICAL: The image MUST have a fully transparent background — no white, no grey, no color behind the badge itself. " +
+                            "Only the badge shape should be visible. " +
+                            "The badge is a bold red (#FF2222) starburst or sunburst shape (like a price tag explosion), " +
+                            "with sharp spiky rays radiating outward, flat graphic style, no drop shadow, no glow, no border. " +
                             "In the center, very large white bold text: '%.0f%%'. " +
                             "Below it, smaller white bold text: 'OFF'. " +
                             "Below that, even smaller white text: 'de R$%.2f por R$%.2f'. " +
-                            "Style: flat graphic, high contrast, e-commerce promo sticker, similar to Shopee or Mercado Livre discount badges. " +
-                            "The sticker must be centered, large, and fill most of the image. Pure white background only.",
+                            "Style: flat vector graphic, high contrast, e-commerce promo sticker, similar to Shopee or Mercado Livre discount badges. " +
+                            "The sticker must be centered and fill most of the canvas. " +
+                            "Transparent background — this will be composited over a photo.",
                     nomeProduto, porcentagem, precoOriginal, precoPromocional
             );
+
+            // Escapa o prompt para uso seguro dentro de JSON string literal
+            String promptEscaped = prompt.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
 
             String openAiBody = String.format("""
             {
                 "model": "gpt-image-1",
                 "prompt": "%s",
                 "n": 1,
-                "size": "1024x1024"
+                "size": "1024x1024",
+                "output_format": "png",
+                "background": "transparent",
+                "quality": "high"
             }
-            """, prompt);
+            """, promptEscaped);
 
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest openAiRequest = HttpRequest.newBuilder()

@@ -40,7 +40,7 @@ public class ProdutoModel {
 
     private Double precoPromocional;
     private Double porcentagemDesconto;
-    private LocalDate dataFinalPromocao;
+    private LocalDateTime dataFinalPromocao;
 
     @Column(length = 1024)
     private String urlBannerPromocional;

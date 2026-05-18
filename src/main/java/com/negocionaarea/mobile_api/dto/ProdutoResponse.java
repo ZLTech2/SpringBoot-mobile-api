@@ -16,7 +16,7 @@ public record ProdutoResponse(
         Boolean isPromocao,
         Double precoPromocional,
         Double porcentagemDesconto,
-        LocalDate dataFinalPromocao,
+        LocalDateTime dataFinalPromocao,
         String urlBannerPromocional
 ) {
 }
