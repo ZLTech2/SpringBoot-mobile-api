@@ -156,15 +156,18 @@ public class ProdutoService {
             throw new ResponseStatusException(FORBIDDEN, "Voce nao pode alterar produtos de outra empresa");
         }
 
-        try{
-            if (!imageModerationService.imagemEhApropriada(imagem.getBytes())){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Imagem rejeitada: conteúdo inapropriado detectado"
-                );
-            }
-        }catch (ResponseStatusException e){
-            throw e;
-        }catch(Exception e){
-            System.out.println("Erro ao verificar imagem: "+ e.getMessage());
+        boolean aprovada = true;
+        try {
+            aprovada = imageModerationService.imagemEhApropriada(imagem.getBytes());
+        } catch (Exception e) {
+            System.out.println("Erro ao verificar imagem: " + e.getMessage());
+        }
+
+        if (!aprovada) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Imagem rejeitada: conteúdo inapropriado detectado"
+            );
         }
 
         String cloudinaryUrl = cloudinaryService.upload(imagem, "produtos");
@@ -216,7 +219,7 @@ public class ProdutoService {
             throw new ResponseStatusException(FORBIDDEN, "Você não pode alterar produtos de outra empresa");
         }
 
-        produto.setPromocao(true);
+        produto.setPromocao(false);
         produto.setPrecoPromocional(null);
         produto.setPorcentagemDesconto(null);
         produto.setDataFinalPromocao(null);
