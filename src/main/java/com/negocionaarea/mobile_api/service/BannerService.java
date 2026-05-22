@@ -30,77 +30,64 @@ public class BannerService {
     @Value("${cloudinary.api-secret}")
     private String cloudinaryApiSecret;
 
-    public String gerarBanner(String nomeProduto, Double precoOriginal, Double precoPromocional, Double porcentagem, String imagemUrl) {
+
+    public String gerarBanner(String nomeProduto, Double precoOriginal, Double precoPromocional, Double porcentagem) {
         try {
-            HttpClient client = HttpClient.newHttpClient();
-
-            // 1. Baixa a imagem do produto do Cloudinary
-            HttpRequest imagemRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(imagemUrl))
-                    .GET()
-                    .build();
-
-            HttpResponse<byte[]> imagemResponse = client.send(imagemRequest, HttpResponse.BodyHandlers.ofByteArray());
-            byte[] imagemBytes = imagemResponse.body();
-
-            // 2. Monta o prompt
+            // 1. Monta o prompt
             String prompt = String.format(
-                    "Add a bold promotional sale badge to this product image. " +
-                            "The badge should show '%.0f%% OFF' in large white text inside a red starburst shape, " +
-                            "positioned in the top-right corner. Also show the new price R$%.2f. " +
-                            "Keep the product fully visible. Modern e-commerce style.",
-                    porcentagem, precoPromocional
+                    "A promotional discount sticker badge for the product '%s'. " +
+                            "CRITICAL: The image MUST have a fully transparent background — no white, no grey, no color behind the badge itself. " +
+                            "Only the badge shape should be visible. " +
+                            "The badge is a bold red (#FF2222) starburst or sunburst shape (like a price tag explosion), " +
+                            "with sharp spiky rays radiating outward, flat graphic style, no drop shadow, no glow, no border. " +
+                            "In the center, very large white bold text: '%.0f%%'. " +
+                            "Below it, smaller white bold text: 'OFF'. " +
+                            "Below that, even smaller white text: 'de R$%.2f por R$%.2f'. " +
+                            "Style: flat vector graphic, high contrast, e-commerce promo sticker, similar to Shopee or Mercado Livre discount badges. " +
+                            "The sticker must be centered and fill most of the canvas. " +
+                            "Transparent background — this will be composited over a photo.",
+                    nomeProduto, porcentagem, precoOriginal, precoPromocional
             );
 
-            // 3. Envia para OpenAI images/edits como multipart
-            String boundary = "----FormBoundary" + System.currentTimeMillis();
+            // Escapa o prompt para uso seguro dentro de JSON string literal
+            String promptEscaped = prompt.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
 
-            byte[] promptPart = ("--" + boundary + "\r\n" +
-                    "Content-Disposition: form-data; name=\"prompt\"\r\n\r\n" +
-                    prompt + "\r\n").getBytes();
+            String openAiBody = String.format("""
+            {
+                "model": "gpt-image-1",
+                "prompt": "%s",
+                "n": 1,
+                "size": "1024x1024",
+                "output_format": "png",
+                "background": "transparent",
+                "quality": "high"
+            }
+            """, promptEscaped);
 
-            byte[] modelPart = ("--" + boundary + "\r\n" +
-                    "Content-Disposition: form-data; name=\"model\"\r\n\r\n" +
-                    "gpt-image-1\r\n").getBytes();
-
-            byte[] imageHeader = ("--" + boundary + "\r\n" +
-                    "Content-Disposition: form-data; name=\"image\"; filename=\"product.png\"\r\n" +
-                    "Content-Type: image/png\r\n\r\n").getBytes();
-
-            byte[] imageFooter = ("\r\n--" + boundary + "--\r\n").getBytes();
-
-            byte[] body = new byte[promptPart.length + modelPart.length + imageHeader.length + imagemBytes.length + imageFooter.length];
-            System.arraycopy(promptPart, 0, body, 0, promptPart.length);
-            System.arraycopy(modelPart, 0, body, promptPart.length, modelPart.length);
-            System.arraycopy(imageHeader, 0, body, promptPart.length + modelPart.length, imageHeader.length);
-            System.arraycopy(imagemBytes, 0, body, promptPart.length + modelPart.length + imageHeader.length, imagemBytes.length);
-            System.arraycopy(imageFooter, 0, body, promptPart.length + modelPart.length + imageHeader.length + imagemBytes.length, imageFooter.length);
-
-            HttpRequest editRequest = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.openai.com/v1/images/edits"))
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest openAiRequest = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.openai.com/v1/images/generations"))
+                    .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + openAiApiKey)
-                    .header("Content-Type", "multipart/form-data; boundary=" + boundary)
-                    .POST(HttpRequest.BodyPublishers.ofByteArray(body))
+                    .POST(HttpRequest.BodyPublishers.ofString(openAiBody))
                     .build();
 
-            HttpResponse<String> editResponse = client.send(editRequest, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> openAiResponse = client.send(openAiRequest, HttpResponse.BodyHandlers.ofString());
 
-            System.out.println(">>> OPENAI EDIT STATUS: " + editResponse.statusCode());
-
-            // 4. Extrai o base64
+            // 2. Extrai o base64
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(editResponse.body());
+            JsonNode root = mapper.readTree(openAiResponse.body());
             String base64 = root.path("data").get(0).path("b64_json").asText();
-            byte[] imageEdited = Base64.getDecoder().decode(base64);
+            byte[] imageBytes = Base64.getDecoder().decode(base64);
 
-            // 5. Sobe para o Cloudinary
+            // 3. Sobe para o Cloudinary
             Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
                     "cloud_name", cloudName,
                     "api_key", cloudinaryApiKey,
                     "api_secret", cloudinaryApiSecret
             ));
 
-            Map uploadResult = cloudinary.uploader().upload(imageEdited, ObjectUtils.asMap(
+            Map uploadResult = cloudinary.uploader().upload(imageBytes, ObjectUtils.asMap(
                     "folder", "banners"
             ));
 

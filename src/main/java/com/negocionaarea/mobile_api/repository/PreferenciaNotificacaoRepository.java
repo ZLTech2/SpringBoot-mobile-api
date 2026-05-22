@@ -15,7 +15,7 @@ public interface PreferenciaNotificacaoRepository extends JpaRepository<Preferen
     FROM preferencia_notificacao pn
     JOIN clientes c ON pn.cliente_id = c.id
     LEFT JOIN preferencia_categorias pc ON pc.preferencia_id = pn.id
-    JOIN empresas e ON e.id = :empresaId
+    JOIN empresas e ON e.id = :empresaId::uuid
     WHERE 
         (
             LOWER(pc.categoria) = LOWER(:categoria)

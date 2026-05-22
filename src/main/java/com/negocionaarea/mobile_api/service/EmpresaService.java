@@ -27,14 +27,18 @@ public class EmpresaService {
     private final PasswordEncoder passwordEncoder;
     private final LocalizacaoService localizacaoService;
     private final FileStorageService fileStorageService;
+    private final CloudinaryService cloudinaryService;
     private ImageModerationService imageModerationService;
 
-    public EmpresaService(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder, LocalizacaoService localizacaoService, FileStorageService fileStorageService, ImageModerationService imageModerationService) {
+
+    public EmpresaService(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder, LocalizacaoService localizacaoService,
+                          FileStorageService fileStorageService, ImageModerationService imageModerationService, CloudinaryService cloudinaryService) {
         this.empresaRepository = empresaRepository;
         this.passwordEncoder = passwordEncoder;
         this.localizacaoService = localizacaoService;
         this.fileStorageService = fileStorageService;
         this.imageModerationService = imageModerationService;
+        this.cloudinaryService = cloudinaryService;
     }
 
     private EmpresaResponse toResponse(EmpresaModel empresa) {
@@ -224,8 +228,8 @@ public class EmpresaService {
         }
 
 
-        var stored = fileStorageService.storeEmpresaLogo(empresa.getId(), logo);
-        empresa.setLogoUrl(stored.publicPath());
+        String cloudinaryUrl = cloudinaryService.upload(logo, "logos");
+        empresa.setLogoUrl(cloudinaryUrl);
         empresa = empresaRepository.save(empresa);
 
         EmpresaResponse response = new EmpresaResponse();
