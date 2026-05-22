@@ -34,7 +34,7 @@ public class ClienteController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasRole('Customer')")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ClienteResponse> getMe(JwtAuthenticationToken auth){
         return ResponseEntity.ok(service.getMe(auth.getToken().getSubject()));
     }

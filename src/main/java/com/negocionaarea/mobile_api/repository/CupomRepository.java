@@ -13,3 +13,4 @@ public interface CupomRepository extends JpaRepository<CupomModel, UUID> {
 
     boolean existsByCliente_CpfAndTipoAndAnoGerado(String cpf, String tipo, Integer anoGerado);
 }
+|
