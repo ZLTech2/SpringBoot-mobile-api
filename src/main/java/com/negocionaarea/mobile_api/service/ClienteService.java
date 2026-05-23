@@ -5,8 +5,10 @@ import java.util.stream.Collectors;
 
 import com.negocionaarea.mobile_api.dto.ClienteRequest;
 import com.negocionaarea.mobile_api.dto.ClienteResponse;
+import com.negocionaarea.mobile_api.dto.EmpresaResponse;
 import com.negocionaarea.mobile_api.dto.Role;
 import com.negocionaarea.mobile_api.model.ClienteModel;
+import com.negocionaarea.mobile_api.model.EmpresaModel;
 import com.negocionaarea.mobile_api.model.EnderecoModel;
 import com.negocionaarea.mobile_api.model.LocalizacaoModel;
 import com.negocionaarea.mobile_api.repository.ClienteRepository;
@@ -14,6 +16,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -22,11 +25,16 @@ public class ClienteService {
     private final ClienteRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final LocalizacaoService localizacaoService;
+    private final FileStorageService fileStorageService;
+    private final CloudinaryService cloudinaryService;
+    private ImageModerationService imageModerationService;
 
-    public ClienteService(ClienteRepository repository, PasswordEncoder passwordEncoder, LocalizacaoService localizacaoService) {
+    public ClienteService(ClienteRepository repository, PasswordEncoder passwordEncoder, LocalizacaoService localizacaoService, FileStorageService fileStorageService, CloudinaryService cloudinaryService) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.localizacaoService = localizacaoService;
+        this.fileStorageService = fileStorageService;
+        this.cloudinaryService = cloudinaryService;
     }
 
     public ClienteResponse salvar(ClienteRequest dto) {
@@ -145,5 +153,34 @@ public class ClienteService {
                     "A senha deve ter no minimo 8 caracteres, 1 letra maiuscula, 1 numero e 1 caractere especial"
             );
         }
+    }
+
+    public ClienteResponse uploadLogo(MultipartFile logo, String email) {
+        ClienteModel cliente = repository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
+
+        try{
+            if (!imageModerationService.imagemEhApropriada(logo.getBytes())){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Imagem rejeitada: conteúdo inapropriado detectado"
+                );
+            }
+        }catch (ResponseStatusException e){
+            throw e;
+        }catch(Exception e){
+            System.out.println("Erro ao verificar imagem: "+ e.getMessage());
+        }
+
+
+        String cloudinaryUrl = cloudinaryService.upload(logo, "logos");
+        cliente.setUrlPerfil(cloudinaryUrl);
+        cliente = repository.save(cliente);
+
+        ClienteResponse response = new ClienteResponse();
+        response.setId(cliente.getId());
+        response.setNome(cliente.getNome());
+        response.setEmail(cliente.getEmail());
+        response.setTelefone(cliente.getTelefone());
+        response.setUrlPerfil(cliente.getUrlPerfil());
+        return response;
     }
 }

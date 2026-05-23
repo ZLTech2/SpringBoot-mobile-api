@@ -16,4 +16,5 @@ public class ClienteResponse {
     private String telefone;
     private String cpf;
     private Instant createdAt;
+    private String UrlPerfil;
 }
