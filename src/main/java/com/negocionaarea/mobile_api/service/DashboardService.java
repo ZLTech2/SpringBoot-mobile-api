@@ -75,7 +75,13 @@ public class DashboardService {
             variacao = ((curtidasMesAtual - curtidasMesAnterior) * 100.0) / curtidasMesAnterior;
         }
 
-        Double mediaPorProduto = curtidaRepository.mediaCurtidasPorProduto(empresaId, inicio, fim);
+        List<Long> contagensPorProduto = curtidaRepository.countCurtidasPorProduto(empresaId, inicio, fim);
+        Double mediaPorProduto = contagensPorProduto.isEmpty()
+                ? 0.0
+                : contagensPorProduto.stream()
+                .mapToLong(Long::longValue)
+                .average()
+                .orElse(0.0);
 
         // ── Top produtos ──────────────────────────────────────────────────────
 
