@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -77,6 +78,24 @@ public class CurtidaService {
                     );
                 })
                 .collect(Collectors.toList());
+    }
+
+    public Double calcularMediaCurtidasPorProduto(
+            UUID empresaId,
+            LocalDateTime inicio,
+            LocalDateTime fim
+    ) {
+
+        List<Long> totais = curtidaRepository.countCurtidasPorProduto(
+                empresaId,
+                inicio,
+                fim
+        );
+
+        return totais.stream()
+                .mapToLong(Long::longValue)
+                .average()
+                .orElse(0.0);
     }
 
 

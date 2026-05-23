@@ -19,7 +19,7 @@ public interface CurtidaRepository extends JpaRepository<CurtidaModel, UUID> {
 
     /** total de curtidas de todos os produtos */
     @Query("""
-        SELECT COUNT(c) FROM CurtidaModel C
+        SELECT COUNT(c) FROM CurtidaModel c
         WHERE c.produto.empresa.id = :empresaId
 """)
     Long countTotalByEmpresaId(@Param("empresaId") UUID empresaId);
@@ -109,17 +109,15 @@ public interface CurtidaRepository extends JpaRepository<CurtidaModel, UUID> {
 
     /** média de curtdas por produto de uma empresa em um período*/
     @Query("""
-        SELECT AVG(sub.total) FROM (
-            SELECT COUNT(c) as total
-            FROM CurtidaModel c
-            WHERE c.produto.empresa.id = :empresaId
-              AND c.dataHora BETWEEN :inicio AND :fim
-            GROUP BY c.produto.idProduto
-        ) sub
-    """)
-    Double mediaCurtidasPorProduto(
+    SELECT COUNT(c)
+    FROM CurtidaModel c
+    WHERE c.produto.empresa.id = :empresaId
+      AND c.dataHora BETWEEN :inicio AND :fim
+    GROUP BY c.produto.idProduto
+""")
+    List<Long> countCurtidasPorProduto(
             @Param("empresaId") UUID empresaId,
-            @Param("inicio")    LocalDateTime inicio,
-            @Param("fim")       LocalDateTime fim
+            @Param("inicio") LocalDateTime inicio,
+            @Param("fim") LocalDateTime fim
     );
 }

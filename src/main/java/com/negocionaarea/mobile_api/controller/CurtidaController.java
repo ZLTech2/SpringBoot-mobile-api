@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -76,5 +77,22 @@ public class CurtidaController {
         List<ProdutoCurtidoDto> feed = curtidaService.listarPostsCurtidos(email);
 
         return ResponseEntity.ok(feed);
+    }
+
+    @GetMapping("/media")
+    @PreAuthorize("hasRole('COMPANY')")
+    public ResponseEntity<Double> mediaCurtidas(
+            @RequestParam UUID empresaId,
+            @RequestParam String inicio,
+            @RequestParam String fim
+    ) {
+
+        Double media = curtidaService.calcularMediaCurtidasPorProduto(
+                empresaId,
+                LocalDateTime.parse(inicio),
+                LocalDateTime.parse(fim)
+        );
+
+        return ResponseEntity.ok(media);
     }
 }
