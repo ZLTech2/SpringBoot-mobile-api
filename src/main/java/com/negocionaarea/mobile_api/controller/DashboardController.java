@@ -18,7 +18,7 @@ public class DashboardController {
     }
 
     @GetMapping("/analytics")
-    @PreAuthorize("hasRole('BUSINESS')")
+    @PreAuthorize("hasRole('ENTERPRISE')")
     public ResponseEntity<DashboardAnalyticsDto> getAnalytics(
             @RequestParam(defaultValue = "mes") String periodo,
             JwtAuthenticationToken auth
