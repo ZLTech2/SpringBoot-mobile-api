@@ -22,13 +22,13 @@ public class DashboardService {
     private final EmpresaRepository empresaRepository;
 
     private static final Map<Integer, String> DIA_SEMANA_MAP = Map.of(
-            1, "Dom",
-            2, "Seg",
-            3, "Ter",
-            4, "Qua",
-            5, "Qui",
-            6, "Sex",
-            7, "Sáb"
+            0, "Dom",
+            1, "Seg",
+            2, "Ter",
+            3, "Qua",
+            4, "Qui",
+            5, "Sex",
+            6, "Sab"
             );
 
     public DashboardService(CurtidaRepository curtidaRepository, EmpresaRepository empresaRepository){
