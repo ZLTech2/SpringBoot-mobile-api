@@ -130,6 +130,7 @@ public class ClienteService {
         response.setEmail(cliente.getEmail());
         response.setTelefone(cliente.getTelefone());
         response.setCpf(cliente.getCpf());
+        response.setUrlPerfil(cliente.getUrlPerfil());
         return response;
     }
 
