@@ -75,7 +75,7 @@ public class PreferenciaNotificacaoService {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom("dtayna3@gmail.com");
+            helper.setFrom("onboarding@resend.dev");
             helper.setTo(cliente.getEmail());
             helper.setSubject("Nova oferta " + produto.getNome());
 
