@@ -7,11 +7,6 @@ import com.negocionaarea.mobile_api.model.PreferenciaNotificacaoModel;
 import com.negocionaarea.mobile_api.model.ProdutoModel;
 import com.negocionaarea.mobile_api.repository.ClienteRepository;
 import com.negocionaarea.mobile_api.repository.PreferenciaNotificacaoRepository;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -23,16 +18,19 @@ import java.util.List;
 @Service
 public class PreferenciaNotificacaoService {
     private final PreferenciaNotificacaoRepository preferenciaNotificacaoRepository;
-    private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
     private final ClienteRepository clienteRepository;
+    private final ResendEmailService resendEmailService;
 
-
-    public PreferenciaNotificacaoService(PreferenciaNotificacaoRepository preferenciaNotificacaoRepository, JavaMailSender javaMailSender, TemplateEngine templateEngine, ClienteRepository clienteRepository) {
+    public PreferenciaNotificacaoService(
+            PreferenciaNotificacaoRepository preferenciaNotificacaoRepository,
+            TemplateEngine templateEngine,
+            ClienteRepository clienteRepository,
+            ResendEmailService resendEmailService) {
         this.preferenciaNotificacaoRepository = preferenciaNotificacaoRepository;
-        this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
         this.clienteRepository = clienteRepository;
+        this.resendEmailService = resendEmailService;
     }
 
     @Async
@@ -71,14 +69,6 @@ public class PreferenciaNotificacaoService {
 
     private void enviarEmail(ClienteModel cliente, ProdutoModel produto){
         try {
-            //Objeto para enviar o email e o qual eu vou manipular
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom("onboarding@resend.dev");
-            helper.setTo(cliente.getEmail());
-            helper.setSubject("Nova oferta " + produto.getNome());
-
             //contexto para substituir as variaveis no template
             Context context = new Context();
             context.setVariable("nomeCliente", cliente.getNome());
@@ -91,22 +81,11 @@ public class PreferenciaNotificacaoService {
             //processa o template
             String html = templateEngine.process("email-template", context);
 
-            //envia como html
-            helper.setText(html, true);
-            helper.addInline("logoEmpresa", new ClassPathResource("images/logoApp.png"));
-            ClassPathResource resource = new ClassPathResource("images/logoApp.png");
+            //envia via Resend
+            resendEmailService.enviar(cliente.getEmail(), "Nova oferta: " + produto.getNome(), html);
 
-            javaMailSender.send(message);
-
-            System.out.println("Email enviado para: " + cliente.getEmail());
-
-        }catch (Exception e){
+        } catch (Exception e){
             System.out.println("Erro ao enviar email: " + e.getMessage());
         }
-
-
     }
-
 }
-
-
