@@ -1,5 +1,7 @@
 # Negócio na Área - API
 
+O Negócio na Área é uma plataforma desenvolvida para aproximar pequenas empresas de clientes, oferecendo ferramentas para divulgação de produtos, localização de estabelecimentos, promoções, interação entre usuários e acompanhamento de métricas por meio de dashboards e relatórios.
+
 API REST desenvolvida em **Spring Boot** para a plataforma **Negócio na Área**, responsável pelo gerenciamento de usuários, empresas, produtos, autenticação, promoções, notificações e relatórios.
 
 ## 🚀 Funcionalidades
