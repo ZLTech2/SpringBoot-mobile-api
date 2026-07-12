@@ -52,9 +52,9 @@ RESEND_API_KEY=
 ## ▶️ Executando localmente
 
 ```bash
-git clone https://github.com/ZLTech2/Negocio_Area_API.git
+git clone https://github.com/ZLTech2/SpringBoot-mobile-api.git
 
-cd Negocio_Area_API
+cd SpringBoot-mobile-api
 
 ./mvnw spring-boot:run
 ```
